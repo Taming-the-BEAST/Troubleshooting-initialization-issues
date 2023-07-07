@@ -55,23 +55,23 @@ Examples in this tutorial require the SA (Sampled Ancestors) package to be insta
 
 The SA package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following:
 
-> Install the **SA** package by selecting it and clicking the **Install/Upgrade** button. ([Figure 2](#packageManage2))
+> Install the **SA** package by selecting it and clicking the **Install/Upgrade** button. ([Figure 2](#packageSA))
 > 
 
 <figure>
-	<a id="packageManage2"></a>
-	<img style="width:70.0%;" src="figures/packages.png" alt="">
-	<figcaption>Figure 2: The BEAST2 Package Manager.</figcaption>
+	<a id="packageSA"></a>
+	<img style="width:70.0%;" src="figures/packageSA.png" alt="">
+	<figcaption>Figure 2: The SA package.</figcaption>
 </figure>
 <br>
 
-> Uninstall the **MM** package by selecting it and clicking the **Uninstall** button. ([Figure 2](#packageManage2))
+> Uninstall the **MM** package by selecting it and clicking the **Uninstall** button. ([Figure 3](#packageMM))
 > 
 
 <figure>
-	<a id="packageManage2"></a>
-	<img style="width:70.0%;" src="figures/packages.png" alt="">
-	<figcaption>Figure 2: The BEAST2 Package Manager.</figcaption>
+	<a id="packageMM"></a>
+	<img style="width:70.0%;" src="figures/packageMM.png" alt="">
+	<figcaption>Figure 3: The MM package.</figcaption>
 </figure>
 <br>
 
@@ -85,13 +85,13 @@ BEAUti needs to be closed for the newly installed packages to be loaded properly
 
 > Download the BEAST2 input file `issue1.xml`.
 > Open **BEAST2** and select the file `issue1.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 3](#errorPackage).
+> You should get an error message, as shown in [Figure 4](#errorPackage).
 >
 
 <figure>
 	<a id="errorPackage"></a>
-	<img style="width:70.0%;" src="figures/errorPackage.png" alt="">
-	<figcaption>Figure 2: An error message in BEAST2.</figcaption>
+	<img style="width:80.0%;" src="figures/errorPackage.png" alt="">
+	<figcaption>Figure 4: An error message in BEAST2.</figcaption>
 </figure>
 <br>
 
@@ -116,34 +116,34 @@ Thus we are missing the **MM** package which contains the morphological substitu
 
 > Download the BEAST2 input file `issue2.xml` in the same folder as `issue`1`.xml`.
 > Open **BEAST2** and select the file `issue2.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 3](#errorOverwrite).
+> You should get an error message, as shown in [Figure 5](#errorOverwrite).
 >
 
 <figure>
 	<a id="errorOverwrite"></a>
-	<img style="width:70.0%;" src="figures/errorOverwrite.png" alt="">
-	<figcaption>Figure 2: Another error message in BEAST2.</figcaption>
+	<img style="width:80.0%;" src="figures/errorOverwrite.png" alt="">
+	<figcaption>Figure 5: Another error message in BEAST2.</figcaption>
 </figure>
 <br>
 
 This error means that BEAST2 is attempting to overwrite a log or tree file that already exists, as explained in the message _Trying to write file bears.log but the file already exists._. By default, overwriting files is not permitted in order to avoid accidentally losing data. If **BEAST2** is run in interactive mode, for instance on your local machine, it offers you the possibility to continue the analysis, by typing **Y** to overwrite the files. However, if **BEAST2** is run on a cluster, it will simply stop when encountering this issue.
 To solve this problem, there are three possibilities:
 
-- if the intention is to overwrite the existing files, select the **overwrite** option in the **BEAST2** launcher (see [Figure 3](#overwrite)) or use the **-overwrite** option in the command-line interface.
+- if the intention is to overwrite the existing files, select the **overwrite** option in the **BEAST2** launcher (see [Figure 6](#overwrite)) or use the **-overwrite** option in the command-line interface.
 
 <figure>
 	<a id="overwrite"></a>
 	<img style="width:70.0%;" src="figures/overwrite.png" alt="">
-	<figcaption>Figure 2: BEAST2 launcher with overwrite option.</figcaption>
+	<figcaption>Figure 6: BEAST2 launcher with overwrite option.</figcaption>
 </figure>
 <br>
 
-- if the intention is to resume a run, i.e. to append to the existing files, select the **resume** option in the **BEAST2** launcher (see [Figure 3](#resume)) or use the **-resume** option in the command-line interface.
+- if the intention is to resume a run, i.e. to append to the existing files, select the **resume** option in the **BEAST2** launcher (see [Figure 7](#resume)) or use the **-resume** option in the command-line interface.
 
 <figure>
 	<a id="resume"></a>
 	<img style="width:70.0%;" src="figures/resume.png" alt="">
-	<figcaption>Figure 2: BEAST2 launcher with resume option.</figcaption>
+	<figcaption>Figure 7: BEAST2 launcher with resume option.</figcaption>
 </figure>
 <br>
 
@@ -162,13 +162,13 @@ To solve this problem, there are three possibilities:
 
 > Download the BEAST input file `issue3_1.xml`.
 > Open **BEAST2** and select the file `issue3_1.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 4](#errorStarting).
+> You should get an error message, as shown in [Figure 8](#errorStarting).
 > 
 
 <figure>
 	<a id="errorStarting"></a>
 	<img style="width:80.0%;" src="figures/errorStarting.png" alt="">
-	<figcaption>Figure 4: Yet another error message in BEAST2.</figcaption>
+	<figcaption>Figure 8: Yet another error message in BEAST2.</figcaption>
 </figure>
 <br>
 
@@ -178,22 +178,22 @@ To inspect the parameter and find the issue, we will first load the file into BE
 
 > Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
 > Switch to the **Priors** panel.
-> Click on the arrow left of the **clockRate.c:bears_irbp_fossils** to see the details of this prior ([Figure 6](#clockRatePrior)).
+> Click on the arrow left of the **clockRate.c:bears_irbp_fossils** to see the details of this prior ([Figure 9](#clockRatePrior)).
 >
 
 <figure>
 	<a id="clockRatePrior"></a>
 	<img style="width:80.0%;" src="figures/clockRatePrior.png" alt="">
-	<figcaption>Figure 5: Details of the clock rate prior.</figcaption>
+	<figcaption>Figure 9: Details of the clock rate prior.</figcaption>
 </figure>
 <br>
 
-We can see that the clock rate prior was changed from the default, which is a uniform distribution from 0 to infinity, to a uniform distribution from 0 to 0.5. In general, changing this default prior is a good idea, as the default is extremely vague and very unlikely to be accurate. However, if we set a more narrow distribution we need to make sure that the starting value for the parameter is still within the range of the chosen distribution. For each parameter, the starting value is shown in the box to the right, as **initial = [x] [min, max]** ([Figure 7](#initialVal)). Here _x_ indicates the starting value and _min_ and _max_ the range of possible values for the corresponding parameter.
+We can see that the clock rate prior was changed from the default, which is a uniform distribution from 0 to infinity, to a uniform distribution from 0 to 0.5. In general, changing this default prior is a good idea, as the default is extremely vague and very unlikely to be accurate. However, if we set a more narrow distribution we need to make sure that the starting value for the parameter is still within the range of the chosen distribution. For each parameter, the starting value is shown in the box to the right, as **initial = [x] [min, max]** ([Figure 10](#initialVal)). Here _x_ indicates the starting value and _min_ and _max_ the range of possible values for the corresponding parameter.
 
 <figure>
 	<a id="initialVal"></a>
 	<img style="width:80.0%;" src="figures/initialVal.png" alt="">
-	<figcaption>Figure 7: Initial values in the Priors panel.</figcaption>
+	<figcaption>Figure 10: Initial values in the Priors panel.</figcaption>
 </figure>
 <br>
 
@@ -204,7 +204,7 @@ We can see that the clock rate prior was changed from the default, which is a un
 The initial value of the clock rate is thus set to **1.0**, which is outside the bounds of the chosen prior for this parameter. This is why the initialization failed.
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **clockRate.c:bears_irbp_fossils** parameter.
-> Change the initial value in the **Value** box to **0.01** ([Figure 8](#initialClock)).
+> Change the initial value in the **Value** box to **0.01** ([Figure 11](#initialClock)).
 > Click on **OK** to close the box.
 > Save the updated configuration as `issue3_1_fixed.xml` by navigating to **File > Save As**.>
 > Open **BEAST2** and select `issue3_1_fixed.xml` as the input file.
@@ -214,7 +214,7 @@ The initial value of the clock rate is thus set to **1.0**, which is outside the
 <figure>
 	<a id="initialClock"></a>
 	<img style="width:50.0%;" src="figures/initialClock.png" alt="">
-	<figcaption>Figure 8: Changing the initial value of the clock rate.</figcaption>
+	<figcaption>Figure 11: Changing the initial value of the clock rate.</figcaption>
 </figure>
 <br>
 
@@ -223,13 +223,13 @@ The initial value of the clock rate is thus set to **1.0**, which is outside the
 
 > Download the BEAST input file `issue3_2.xml`.
 > Open **BEAST2** and select the file `issue3_2.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 4](#errorStarting2).
+> You should get an error message, as shown in [Figure 12](#errorStarting2).
 > 
 
 <figure>
 	<a id="errorStarting2"></a>
 	<img style="width:80.0%;" src="figures/errorStarting2.png" alt="">
-	<figcaption>Figure 4: A similar error message as earlier.</figcaption>
+	<figcaption>Figure 12: A similar error message as earlier.</figcaption>
 </figure>
 <br>
 
@@ -253,20 +253,20 @@ The starting tree can be found in the **Starting tree** panel, which is hidden b
 <figure>
 	<a id="startingTree"></a>
 	<img style="width:80.0%;" src="figures/startingTree.png" alt="">
-	<figcaption>Figure 5: Starting tree panel.</figcaption>
+	<figcaption>Figure 13: Starting tree panel.</figcaption>
 </figure>
 <br>
 
-As we can see in [Figure 5](#startingTree), the initial tree in this analysis is set to a Newick tree, chosen by the user. The **Newick** box gives the full Newick string, which we could use to inspect the tree in an other program. This string can also be copied directly from the XML file. First, we will check if this tree is compatible with the tree constraints set in the **Priors** panel.
+As we can see in [Figure 13](#startingTree), the initial tree in this analysis is set to a Newick tree, chosen by the user. The **Newick** box gives the full Newick string, which we could use to inspect the tree in an other program. This string can also be copied directly from the XML file. First, we will check if this tree is compatible with the tree constraints set in the **Priors** panel.
 
 > Switch to the **Priors** panel.
-> Click on the arrow left of the **root.prior** to see the details of this prior ([Figure 6](#rootPrior)).
+> Click on the arrow left of the **root.prior** to see the details of this prior ([Figure 14](#rootPrior)).
 >
 
 <figure>
 	<a id="rootPrior"></a>
 	<img style="width:80.0%;" src="figures/rootPrior.png" alt="">
-	<figcaption>Figure 6: Priors panel showing the root prior.</figcaption>
+	<figcaption>Figure 14: Priors panel showing the root prior.</figcaption>
 </figure>
 <br>
 
@@ -284,7 +284,7 @@ Next, we will inspect the starting values of the parameters of the FBD model, fo
 
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **diversificationRateFBD** parameter.
-> Change the initial value in the **Value** box to **0.01** ([Figure 8](#initialDiv)).
+> Change the initial value in the **Value** box to **0.01** ([Figure 15](#initialDiv)).
 > Click on **OK** to close the box.
 > Save the updated configuration as `issue3_2_fixed.xml` by navigating to **File > Save As**.
 > Open **BEAST2** and select `issue3_2_fixed.xml` as the input file.
@@ -294,7 +294,7 @@ Next, we will inspect the starting values of the parameters of the FBD model, fo
 <figure>
 	<a id="initialDiv"></a>
 	<img style="width:50.0%;" src="figures/initialDiv.png" alt="">
-	<figcaption>Figure 8: Changing the initial value of the diversification rate.</figcaption>
+	<figcaption>Figure 15: Changing the initial value of the diversification rate.</figcaption>
 </figure>
 <br>
 
@@ -305,13 +305,13 @@ If there is no obvious incompatibility in the setup of the analysis, it is possi
 
 > Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
 > Switch to the **MCMC** tab.
-> The number of initialization attempts is controlled by the **Num Initialization Attempts** setting, shown in [Figure 25](#numInit).
+> The number of initialization attempts is controlled by the **Num Initialization Attempts** setting, shown in [Figure 16](#numInit).
 >
 
 <figure>
 	<a id="numInit"></a>
 	<img style="width:80.0%;" src="figures/numInit.png" alt="">
-	<figcaption>Figure 25: Setting the number of initialization attempts.</figcaption>
+	<figcaption>Figure 16: Setting the number of initialization attempts.</figcaption>
 </figure>
 <br>
 
@@ -322,13 +322,13 @@ Note that changing this setting will never help if the analysis contains incompa
 
 > Download the BEAST input file `issue4.xml` and `issue4_working.xml`.
 > Open **BEAST2** and select the file `issue4.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 3](#errorParsing).
+> You should get an error message, as shown in [Figure 17](#errorParsing).
 >
 
 <figure>
 	<a id="errorParsing"></a>
 	<img style="width:80.0%;" src="figures/errorParsing.png" alt="">
-	<figcaption>Figure 3: The return of the error message.</figcaption>
+	<figcaption>Figure 17: The return of the error message.</figcaption>
 </figure>
 <br>
 
@@ -357,13 +357,13 @@ Many different issues can occur in **BEAST2**, and it is impossible to cover the
 
 > Download the BEAST2 input file `issue5.xml`.
 > Open **BEAST2** and select the file `issue5.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 3](#errorOrigin).
+> You should get an error message, as shown in [Figure 18](#errorOrigin).
 >
 
 <figure>
 	<a id="errorOrigin"></a>
 	<img style="width:80.0%;" src="figures/errorOrigin.png" alt="">
-	<figcaption>Figure 3: The revenge of the return of the error message.</figcaption>
+	<figcaption>Figure 18: The revenge of the return of the error message.</figcaption>
 </figure>
 <br>
 
