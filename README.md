@@ -1,7 +1,7 @@
 ---
 author: Joëlle Barido-Sottani,Louis du Plessis
 level: Beginner
-title: Troubleshooting initalization issues
+title: Troubleshooting initialization issues
 subtitle: Getting BEAST2 to start
 beastversion: 2.7.x
 ---
@@ -17,7 +17,7 @@ Many different problems can prevent a BEAST2 analysis from starting, from techni
 
 ### BEAST2 - Bayesian Evolutionary Analysis Sampling Trees 2
 
-BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite Bouckaert2014  Bouckaert2019 --file Troubleshooting-initalization-issues/master-refs %}. 
+BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite Bouckaert2014  Bouckaert2019 --file Troubleshooting-initialization-issues/master-refs %}. 
 
 
 ### BEAUti2 - Bayesian Evolutionary Analysis Utility
@@ -400,7 +400,7 @@ Note that this issue can also happen when using a user-specified starting tree, 
 
 # Acknowledgment
 
-Many examples in this tutorial are inspired by real issues encountered during the analysis of the convergent evolution of true crabs {% cite Wolfe2022 --file Troubleshooting/master-refs %}.
+Many examples in this tutorial are inspired by real issues encountered during the analysis of the convergent evolution of true crabs {% cite Wolfe2022 --file Troubleshooting-initialization-issues/master-refs %}.
 
 
 # Useful Links
@@ -414,5 +414,5 @@ Many examples in this tutorial are inspired by real issues encountered during th
 
 # Relevant References
 
-{% bibliography --cited --file Troubleshooting-initalization-issues/master-refs.bib %}
+{% bibliography --cited --file Troubleshooting-initialization-issues/master-refs.bib %}
 
