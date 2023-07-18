@@ -8,7 +8,6 @@ beastversion: 2.7.x
 
 
 
-
 # Background
 
 Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
@@ -136,7 +135,7 @@ There are still times when this strategy won't work (the package is messy, conta
 
 
 
-## Common issue #2
+## Common issue #2: Output files already exist
 
 > Download the BEAST2 input file `issue2.xml` in the same folder as `issue`1`.xml`.
 > Open **BEAST2** and select the file `issue2.xml` as input file. Start the run with the **Run** button.
@@ -146,23 +145,24 @@ There are still times when this strategy won't work (the package is messy, conta
 <figure>
 	<a id="errorOverwrite"></a>
 	<img style="width:80.0%;" src="figures/errorOverwrite.png" alt="">
-	<figcaption>Figure 5: Another error message in BEAST2.</figcaption>
+	<figcaption>Figure 5: Another error message in BEAST2, this time for issue2.xml.</figcaption>
 </figure>
 <br>
 
-This error means that BEAST2 is attempting to overwrite a log or tree file that already exists, as explained in the message _Trying to write file bears.log but the file already exists._. By default, overwriting files is not permitted in order to avoid accidentally losing data. If **BEAST2** is run in interactive mode, for instance on your local machine, it offers you the possibility to continue the analysis, by typing **Y** to overwrite the files. However, if **BEAST2** is run on a cluster, it will simply stop when encountering this issue.
+This error means that BEAST2 is attempting to overwrite a `.log` or `.tree` file that already exists, as explained in the message _Trying to write file bears.log but the file already exists_. By default, overwriting files is not permitted in order to avoid accidentally losing data. If **BEAST2** is run in interactive mode from the command line, for instance on your local machine, it offers you the possibility to continue the analysis, by typing **Y** to overwrite the files. However, if **BEAST2** is run on a computing cluster, it will simply stop when encountering this issue.
+
 To solve this problem, there are three possibilities:
 
-- if the intention is to overwrite the existing files, select the **overwrite** option in the **BEAST2** launcher (see [Figure 6](#overwrite)) or use the **-overwrite** option in the command-line interface.
+- If the intention is to overwrite the existing files, select the **overwrite** option from the dropdown menu in the **BEAST2** launcher (see [Figure 6](#overwrite)) or use the **-overwrite** option in the command-line interface.
 
 <figure>
 	<a id="overwrite"></a>
 	<img style="width:70.0%;" src="figures/overwrite.png" alt="">
-	<figcaption>Figure 6: BEAST2 launcher with overwrite option.</figcaption>
+	<figcaption>Figure 6: BEAST2 launcher with the overwrite option selected.</figcaption>
 </figure>
 <br>
 
-- if the intention is to resume a run, i.e. to append to the existing files, select the **resume** option in the **BEAST2** launcher (see [Figure 7](#resume)) or use the **-resume** option in the command-line interface.
+- If the intention is to resume a run, i.e. to append to the existing files, select the **resume** option from the dropdown menu in the **BEAST2** launcher (see [Figure 7](#resume)) or use the **-resume** option in the command-line interface.
 
 <figure>
 	<a id="resume"></a>
@@ -171,13 +171,15 @@ To solve this problem, there are three possibilities:
 </figure>
 <br>
 
-- if you would like to create new files, either move the original files or change the names of the log and tree files in the new analysis.
+- If you would like to create new files, either move the original files, move the XML file, or change the names of the log and tree files in the new analysis.
 
 > Open **BEAUti** and load the file `issue2.xml`.
-> In the **MCMC** panel, expand the options for the **tracelog** by clicking on the arrow to the left. Change the **File Name** to **bears_longer.log**.
-> Do the same for the **treelog** and change the **File Name** to **bears_longer.trees**.
-> Save the file `issue2.xml`. Run it in **BEAST2** again, and check that it now works.
+> - In the **MCMC** panel, expand the options for the **tracelog** by clicking on the arrow to the left. Change the **File Name** to `bears_longer.log`.
+> - Do the same for the **treelog** and change the **File Name** to `bears_longer.trees`.
+> - Save the file `issue2.xml`. Run it in **BEAST2** again, and check that it now works.
 >
+
+To make your life easier and avoid accidentally overwriting output files you can use the variables `$(filebase)`, `$(seed)` and `$(tree)` in the names for the `.log` and `.tree` files. When you run the analysis `$(filebase)` will be replaced by the name of the XML file (without the `.xml` extension), and `$(seed)` by the random number seed (useful for reproducing exactly the same analysis). The `$(tree)` variable can be used to label different `.tree` files when an analysis has more than one tree. Since BEAST 2.7 the default `.log` filename is `$(filebase).log` and the default `.tree` file name is `$(filebase)-$(tree).trees`. 
 
 
 ## Common issue #3: Could not find a proper state to initialize
