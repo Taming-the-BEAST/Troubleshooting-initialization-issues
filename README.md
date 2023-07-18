@@ -8,6 +8,7 @@ beastversion: 2.7.x
 
 
 
+
 # Background
 
 Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
@@ -43,7 +44,7 @@ The data used in this tutorial is an alignment of molecular sequences for the in
  
 ## Packages
 
-Examples in this tutorial require the SA (Sampled Ancestors) package to be installed.
+Examples in this tutorial require the **SA** (Sampled Ancestors) package to be installed.
 
 > Launch **BEAUti**, then open the **BEAST2 Package Manager** by navigating to **File > Manage Packages** ([Figure 1](#packageManage1)).
 > 
@@ -55,7 +56,7 @@ Examples in this tutorial require the SA (Sampled Ancestors) package to be insta
 </figure>
 <br>
 
-The SA package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following.
+The **SA** package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following.
 
 > Install the **SA** package by selecting it and clicking the **Install/Upgrade** button ([Figure 2](#packageSA)).
 > 
@@ -95,25 +96,44 @@ BEAUti needs to be closed for the newly installed packages to be loaded properly
 <figure>
 	<a id="errorPackage"></a>
 	<img style="width:80.0%;" src="figures/errorPackage.png" alt="">
-	<figcaption>Figure 4: An error message in BEAST2.</figcaption>
+	<figcaption>Figure 4: The error message when running issue1.xml in BEAST2.</figcaption>
 </figure>
 <br>
 
 
-This error means that BEAST2 could not identify one of the components of the analysis in the XML. The error message shows which component is unidentified, in this example _morphmodels.evolution.substitutionmodel.LewisMK_, as well as the program's closest guess for what the component could be, here _beastlabs.inference.ML_. There are two main causes of this problem:
+This error means that BEAST2 could not identify one of the components of the analysis in the XML file. The error message shows which component is unidentified, in this example the class _morphmodels.evolution.substitutionmodel.LewisMK_, as well as the program's closest guess for what the component could be, here _beastlabs.inference.ML_. BEAST2 also shows you roughly where the reference to the missing component was found within the hierarchical structure of the XML file (here it is the substitution model, inside the site model, inside the tree likelihood, and so on). 
 
-- an error was introduced in the component name when editing the XML manually. In this case, you simply need to edit the XML to use the correct name.
-- BEAST2 is missing the package which contains this component. In this case, you need to identify which package is missing. If the file was produced by BEAUti, it should contain a list of required packages in the first line of the file. Otherwise you can try examining the source of the XML (e.g. a tutorial or a published analysis) or searching online for the name of the missing component.
 
-In this example, we have not edited the XML manually, so we conclude that we are missing a package. From the first line of the XML, we can see the list of required packages 
+There are two main causes for this error:
+
+- An error was introduced in the component name when editing the XML file manually. In this case, you simply need to edit the XML file to use the correct name.
+- The BEAST2 package which contains this component is not installed. In this case, you need to identify which package is missing. If the file was produced by BEAUti, it should contain a list of required packages in the first line of the file. 
+
+In this example, we have not edited the XML manually, so we conclude that we are missing a package. If we open the XML file in a text editor, we can see the list of required packages (separated by colons) in the XML header on the first line.
+
 ```xml 
 required="BEAST.base v2.7.4:SA v2.1.1:MM v1.2.1" 
 ```
-Thus we are missing the **MM** package which contains the morphological substitution models (as we could also see from the name of the missing component).
+
+**BEAST.base** is always installed and we just installed **SA**. Thus we are missing the **MM** package which contains morphological substitution models (earlier we made sure that this package is uninstalled so that this XML file would not initialize). In fact, because the required packages are listed in the XML file, **BEAST2** also detected the missing package and reported it with the error message: _The following package is required, but is not available: MM v1.2.1_. 
+
+However, keep in mind that if the XML file was manually edited then it is possible that not all required packages are listed in the XML header. In these cases you have to examine the missing component error to fix the issue. 
+
+> Open `issue1.xml` in a text editor and remove the **MM** package from the requirements. Save the file and run it in **BEAST2**. 
+> Did the error message change?
+>
+
+When the required packages are not listed in the XML file it can sometimes be tricky to figure out which package to install, because not all packages have self-explanatory names and the Java classpath of the missing component doesn't always contain the package name (as is the case here). In this case we can guess that the missing component (_morphmodels.evolution.substitutionmodel.LewisMK_) has something to do with morphological models. In the BEAST2 package manager there are short descriptions of each package on the right. For **MM** the description reads "Enables models of morphological character evolution." We can also click on the link icon to be taken to the code repository for the **MM** package, where we can easily verify that _morphmodels.evolution.substitutionmodel.LewisMK_ is indeed included in it (within the `src/` directory). 
+
+There are still times when this strategy won't work (the package is messy, contains many different types of models, or the package may not even be available on the default BEAST2 package repository). In such cases you can try examining the source of the XML file (e.g. a tutorial or a publication) or simply do an online search for the name of the missing component. For instance, the **MM** package repository is one of the top results in a Google search for _morphmodels.evolution.substitutionmodel.LewisMK_.
+
 
 > Following the same process as for the **SA** package, open the **BEAST2 Package Manager** in **BEAUti** and install the **MM** package.
-> Run the file `issue1.xml` in **BEAST2** again, and check that it now works.
+> Close and reopen **BEAST2** and run the file `issue1.xml` again, checking that it now initializes and runs.
 >
+
+
+
 
 
 ## Common issue #2
