@@ -7,6 +7,7 @@ beastversion: 2.7.x
 ---
 
 
+
 # Background
 
 Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
@@ -17,7 +18,7 @@ Many different problems can prevent a BEAST2 analysis from starting, from techni
 
 ### BEAST2 - Bayesian Evolutionary Analysis Sampling Trees 2
 
-BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite Bouckaert2014  Bouckaert2019 --file Troubleshooting-initialization-issues/master-refs %}. 
+BEAST2 ([http://www.beast2.org](http://www.beast2.org)) is a free software package for Bayesian evolutionary analysis of molecular sequences using MCMC and strictly oriented toward inference using rooted, time-measured phylogenetic trees. This tutorial is written for BEAST v{{ page.beastversion }} {% cite Bouckaert2014 Bouckaert2019 --file Troubleshooting-initialization-issues/master-refs %}. 
 
 
 ### BEAUti2 - Bayesian Evolutionary Analysis Utility
@@ -26,9 +27,10 @@ BEAUti2 is a graphical user interface tool for generating BEAST2 XML configurati
 
 Both BEAST2 and BEAUti2 are Java programs, which means that the exact same code runs on all platforms. For us it simply means that the interface will be the same on all platforms. The screenshots used in this tutorial are taken on a Mac OS X computer; however, both programs will have the same layout and functionality on both Windows and Linux. BEAUti2 is provided as a part of the BEAST2 package so you do not need to install it separately.
 
-### Text editor
 
-We will perform some manual edits on the XML files in this tutorial. XML files can be open by any text editor, but it may be more comfortable to work with an editor designed for the XML format. Some good examples are Notepad++ (Windows), Sublime Text (Mac), EMACS (any platform) or VSCode (any platform), but you can use whichever program you prefer.
+### Any programmer-friendly text editor
+
+We will need to perform some manual edits on the XML files produced by BEAUti, for which we'll need a text editor. XML files can be opened by any text editor, but it's best to use one designed for programmers as these include nice features such as syntax highlighting, which makes the code more reader-friendly. [Sublime Text](https://www.sublimetext.com) is a good option which is available for MacOS, Windows and Linux. Other options include [Notepad++](https://notepad-plus-plus.org) (Windows), [Emacs](https://www.gnu.org/software/emacs/) (any platform) or [VSCode](https://code.visualstudio.com) (any platform). 
 
 ----
 
@@ -36,14 +38,14 @@ We will perform some manual edits on the XML files in this tutorial. XML files c
 
 ## The Data
 
-The data used in this tutorial is an alignment of molecular sequences for the interphotoreceptor retinoid-binding protein (irbp), and a morphological character matrix. Both alignments contain data for 8 extant and 14 fossil bear species.
+The data used in this tutorial is an alignment of molecular sequences for the interphotoreceptor retinoid-binding protein (irbp), and a morphological character matrix. Both alignments contain data for 8 extant and 14 fossil bear species. To illustrate different issues we have created several XML files using this dataset, each with a different initalization issue, available on the left-hand panel, under the heading **XML**.
 
  
 ## Packages
 
 Examples in this tutorial require the SA (Sampled Ancestors) package to be installed.
 
-> Launch **BEAUti**, then open the **BEAST2 Package Manager** by navigating to **File > Manage Packages**. ([Figure 1](#packageManage1))
+> Launch **BEAUti**, then open the **BEAST2 Package Manager** by navigating to **File > Manage Packages** ([Figure 1](#packageManage1)).
 > 
 
 <figure>
@@ -53,27 +55,29 @@ Examples in this tutorial require the SA (Sampled Ancestors) package to be insta
 </figure>
 <br>
 
-The SA package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following:
+The SA package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following.
 
-> Install the **SA** package by selecting it and clicking the **Install/Upgrade** button. ([Figure 2](#packageSA))
+> Install the **SA** package by selecting it and clicking the **Install/Upgrade** button ([Figure 2](#packageSA)).
 > 
 
 <figure>
 	<a id="packageSA"></a>
 	<img style="width:70.0%;" src="figures/packageSA.png" alt="">
-	<figcaption>Figure 2: The SA package.</figcaption>
+	<figcaption>Figure 2: Install the SA package.</figcaption>
 </figure>
 <br>
 
-> Uninstall the **MM** package by selecting it and clicking the **Uninstall** button. ([Figure 3](#packageMM))
+> Next, uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)).
 > 
 
 <figure>
 	<a id="packageMM"></a>
 	<img style="width:70.0%;" src="figures/packageMM.png" alt="">
-	<figcaption>Figure 3: The MM package.</figcaption>
+	<figcaption>Figure 3: Uninstalling the MM package.</figcaption>
 </figure>
 <br>
+
+The reason for uninstalling the MM package will become clear later. If the MM package wasn't installed already then clicking uninstall will have no effect.
 
 BEAUti needs to be closed for the newly installed packages to be loaded properly.
 
