@@ -320,6 +320,67 @@ Using this procedure to trace through the calculation of the posterior you can a
 
 <br>
 
+### Troubleshooting incompatibilities between model components
+
+In the example above the incompatibility was just within one parameter that was out of the bounds of its prior. When one model parameter appears in multiple model components, then incompatibilities between different model components can lead to the posterior evaluating to negative infinity. This most often involves the tree, which appears in many model components. If, in addition, MRCA priors with hard bounds or offsets are set, or the starting tree is fixed, the probability for an incompatibility is much higher. 
+
+One particular example occurs with birth-death models where the origin parameter is estimated (such as the BDSKY, BDMM or FBD models). 
+
+> Download the BEAST2 input file `issue5.xml`.
+> 
+> - Open **BEAST2** and select the file `issue5.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 18](#errorOrigin).
+>
+
+<figure>
+	<a id="errorOrigin"></a>
+	<img style="width:80.0%;" src="figures/errorOrigin.png" alt="">
+	<figcaption>Figure 18: The revenge of the return of the error message (issue5.xml).</figcaption>
+</figure>
+<br>
+
+Here the message (_Initial value of origin (100.0) should be greater than initial root height (125.1)_) indicates clearly what is going on: we have specified an origin parameter with an initial value which is incompatible with the initial tree (by definition the origin should be larger than the height of the tree). 
+
+Unfortunately, while it is straightforward to create an XML file with this error in BEAUti, it cannot be loaded into BEAUti again for editing (give it a try). This is because BEAUti does more than simply write XML code to files. While editing the XML file, BEAUti also instantiates the model (using the same code that BEAST2 uses to run the model). This is done to ensure that BEAUti only produces XML files containing BEAST2 analyses with the correct syntax. Similarly, when loading an XML file into BEAUti, the model is instantiated. If doing so returns any errors, BEAUti cannot load the XML file. This would be the case if, for example the XML file contains syntax errors, or it refers to classes in packages that are not installed. In this particular case, the fossilized birth-death model checks that the initial value of the origin parameter is greater than the height of the starting tree. Sinc this is not the case here, the model throws an error and BEAUti fails to load the XML file. To correct this error we can either recreate the whole XML file from scratch in BEAUti, or quickly edit it in a text editor.
+
+> Open the `issue5.xml` file in a text editor.
+> - Look for the parameter **originFBD.t:bears** and examine its initial value.
+> - Look for the root prior **root.prior** and examine its distribution. Look in particular at the values for the **offset**, **M** and **S** parameters.
+>
+
+The origin parameter configuration is:
+```xml
+<parameter id="originFBD.t:bears" spec="parameter.RealParameter" lower="0.0" name="stateNode">100.0</parameter>
+```
+And the root prior distribution is set up like this:
+```xml
+<LogNormal id="LogNormalDistributionModel.9" name="distr" offset="125.0">                                 
+     <parameter id="RealParameter.92" spec="parameter.RealParameter" estimate="false" name="M">2.0</parameter>
+     <parameter id="RealParameter.93" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">0.5</parameter>
+</LogNormal>
+```
+
+We can see that the distribution for the root prior has an offset of **125.0**, meaning that the root of the tree will always be greater than this value. However the initial value of the origin parameter was left to the default, which is **100.0**. This is the source of the error reported by **BEAST2**. Thus we need to change the value of the origin to be compatible with our starting tree.
+
+> - In the text editor, look for the parameter **originFBD.t:bears** and change its initial value from **100.0** to **150.00**.
+> - Save the updated configuration as `issue5_fixed.xml`.
+> - Open **BEAST2** and select `issue5_fixed.xml` as the input file.
+> - Start the run with the **Run** button. It works now!
+>
+
+Here the incompatibility stemmed from us setting a root prior with an offset. However, this issue can also happen when using a user-specified starting tree, for instance a tree from a Newick string. In this case the origin parameter needs to be compatible with the specified tree, i.e. the initial value of the origin needs to be higher than the root of the Newick tree. Finally, it is also entirely possible for this issue to occur even when using a default randomly initialized tree. 
+
+Some other common cases where inconsistencies between model components can lead to initialization failures are:
+
+- Setting multiple (reciprocally incompatible) MRCA priors on different nodes in the tree.
+- Setting monophyly constraints on the tree and supplying a starting tree incompatible with these constraints.
+- When an initial tree is specified for a structured analysis that is incompatible with the initial parameter values of the migration model.
+- When the initial values for rates are set to 0, for instance setting the initial value of the sampling rate (of a birth-death model) to 0 means that it is impossible to have observed any samples, so every tree has a probability of 0 under the model.
+
+
+
+<br>
+
 ### Troubleshooting a model issue
 
 > Download the BEAST input file `issue3_2.xml`.
@@ -501,48 +562,11 @@ The generated documentation should be for the version of BEAST2 that is installe
 
 ## Error messages not covered in this tutorial
 
-Many different issues can occur in **BEAST2**, and it is impossible to cover them all in this tutorial. However, one important thing to keep in mind is that **BEAST2** will always attempt to provide as much information as possible on the issue it has encountered. Thus it is critical to carefully read the error messages, as in the following example.
+Many different issues can occur in **BEAST2**, and it is impossible to cover them all in this tutorial. However, one important thing to keep in mind is that **BEAST2** will always attempt to provide some information on the issue it has encountered. Thus it is critical to carefully read the error messages, as in all of the examples in this tutorial. While the error messages may not always be very insightful, there is usually enough information in there to solve most common issues. 
 
-> Download the BEAST2 input file `issue5.xml`.
-> Open **BEAST2** and select the file `issue5.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 18](#errorOrigin).
->
+For the issues that cannot be easily debugged it is recommended to contact the package developers, or to make a post on [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users). If it is a common issue it is likely that someone else has encountered it before you! 
 
-<figure>
-	<a id="errorOrigin"></a>
-	<img style="width:80.0%;" src="figures/errorOrigin.png" alt="">
-	<figcaption>Figure 18: The revenge of the return of the error message.</figcaption>
-</figure>
-<br>
-
-Here the message (_Initial value of origin (100.0) should be greater than initial root height (125.1)_) indicates clearly what is going on: we have specified an origin parameter with an initial value which is incompatible with the initial tree. Unfortunately, this error also means that the file cannot be loaded in **BEAUti** (although it was produced by it originally).
-
-> Open the `issue5.xml` file in a text editor.
-> Look for the parameter **originFBD.t:bears** and examine its initial value.
-> Look for the root prior **root.prior** and examine its distribution. Look in particular at the values for the **offset**, **M** and **S** parameters.
->
-
-The origin parameter configuration is:
-```xml
-	<parameter id="originFBD.t:bears" spec="parameter.RealParameter" lower="0.0" name="stateNode">100.0</parameter>
-```
-And the root prior distribution is set up like this:
-```xml
-	<LogNormal id="LogNormalDistributionModel.9" name="distr" offset="125.0">                                 
-        <parameter id="RealParameter.92" spec="parameter.RealParameter" estimate="false" name="M">2.0</parameter>
-        <parameter id="RealParameter.93" spec="parameter.RealParameter" estimate="false" lower="0.0" name="S" upper="5.0">0.5</parameter>
-    </LogNormal>
-```
-
-We can see that the distribution for the root prior has an offset of **125.0**, meaning that the root of the tree will always be greater than this value. However the initial value of the origin parameter was left to the default, which is **100.0**. This is the source of the error reported by **BEAST2**. Thus we need to change the value of the origin to be compatible with our starting tree.
-
-> In the text editor, look for the parameter **originFBD.t:bears** and change its value from **100.0** to **150.00**.
-> Save the updated configuration as `issue5_fixed.xml`.
-> Open **BEAST2** and select `issue5_fixed.xml` as the input file.
-> Start the run with the **Run** button. It works now!
->
-
-Note that this issue can also happen when using a user-specified starting tree, for instance a tree from a Newick string. In this case the origin parameter needs to be compatible with the specified tree, i.e. the initial value of the origin needs to be higher than the root of the Newick tree.
+In the rare case where BEAST2 initializes an analysis without any problems and then subsequently crashes it is likely that there are issues with the code (contact the developers) or with your setup (try running it on a different machine). 
 
 ----
 
