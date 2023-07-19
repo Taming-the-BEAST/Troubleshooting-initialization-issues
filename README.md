@@ -38,7 +38,7 @@ We will need to perform some manual edits on the XML files produced by BEAUti, f
 
 ## The Data
 
-The data used in this tutorial is an alignment of molecular sequences for the interphotoreceptor retinoid-binding protein (irbp), and a morphological character matrix. Both alignments contain data for 8 extant and 14 fossil bear species. To illustrate different issues we have created several XML files using this dataset, each with a different initalization issue, available on the left-hand panel, under the heading **XML**.
+The data used in this tutorial is an alignment of genetic sequences for the interphotoreceptor retinoid-binding protein (irbp), and a morphological character matrix. Both alignments contain data for 8 extant and 14 fossil bear species. To illustrate different issues we have created several XML files using this dataset, each with a different initalization issue, available on the left-hand panel, under the heading **XML**.
 
  
 ## Packages
@@ -184,65 +184,123 @@ To make your life easier and avoid accidentally overwriting output files you can
 
 ## Common issue #3: Could not find a proper state to initialize
 
-### Troubleshooting a parameter issue
+### Troubleshooting a simple parameter issue
 
 > Download the BEAST input file `issue3_1.xml`.
-> Open **BEAST2** and select the file `issue3_1.xml` as input file. Start the run with the **Run** button.
+>
+> - Open **BEAST2** and select the file `issue3_1.xml` as input file. 
+> - Start the run with the **Run** button.
+>
 > You should get an error message, as shown in [Figure 8](#errorStarting).
 > 
 
 <figure>
 	<a id="errorStarting"></a>
 	<img style="width:80.0%;" src="figures/errorStarting.png" alt="">
-	<figcaption>Figure 8: Yet another error message in BEAST2.</figcaption>
+	<figcaption>Figure 8: Yet another error message in BEAST2, this time for issue3_1.xml.</figcaption>
 </figure>
 <br>
 
-In this situation, the inference failed to start because a good initial state could not be found, as explained by the error message (_Fatal exception: Could not find a proper state to initialise._). This issue is much more complex to diagnose than the previous ones, as it can be caused by many different parts of the analysis configuration. However, as before the error message provides some information on the source of the problem, as it details the probability of all the components of the analysis. Here the message reads _P(ClockPrior.c:bears_irbp_fossils) = -Infinity_, showing that the issue is likely linked to the clock rate of the molecular alignment and the prior set on this parameter.
+The inference failed to start because a good initial state could not be found, as explained by the error message (_Fould not find a proper state to initialise. Perhaps try another seed_). This issue is much more complex to diagnose than the previous ones, as it can be caused by many different parts of the analysis configuration. The suggestion to try another seed is not a very good one and we will come back to it in the **"Number of initialization attempts"** section below. 
+
+Above the error message BEAST2 traces through its attempt to calculate an initial value for the posterior. We can use this trace to figure out which model component is responsible for the issue. Remember that the posterior is given by Bayes' formula,
+
+{%eq
+	P(\theta \mid D) = \frac{P(D \mid \theta) P(\theta)}{P(D)}
+%}
+
+where {% eqinline \theta %} is a vector of all the model parameters and {% eqinline D %} is the data, here consisting of the genetic data, {% eqinline D_G %} and the morphological data, {% eqinline D_M %}. In the equation above {% eqinline P(D \mid \theta) %} is the likelihood and {% eqinline P(\theta) %}, the prior. 
+
+In our model we are estimating the following parameters:
+
+- Tree, {% eqinline \mathcal{T} %}
+- Fossilized birth-death model:
+	- Diversification rate, {% eqinline \lambda %} 
+	- Turnover, {% eqinline \gamma %}
+	- Sampling proportion, {% eqinline p %}
+	- Origin time, {% eqinline t_0 %}
+- HKY nucleotide substitution model:
+	- Transition/transversion ratio, {% eqinline \kappa %} 
+	- Nucleotide frequencies, {% eqinline \Pi = (\pi_A, \pi_C, \pi_G, \pi_T) %}
+- Lewis MK morphological trait substitution model:
+	- Relative mutation rate, {% eqinline \phi %}
+- Strict clock model:
+	- Nucleotide substitution rate, {% eqinline \mu_G %}
+	- Morphological trait substitution rate, {% eqinline \mu_M %}
+
+Thus, we can write the posterior as, 
+
+{%eq
+	P(\theta \mid D) = \frac{P(D_G, D_M \mid \mathcal{T}, \lambda, \gamma, p, t_0, \kappa, \Pi, \phi, \mu_G, \mu_M) P(\mathcal{T}, \lambda, \gamma, p, t_0, \kappa, \Pi, \phi, \mu_G, \mu_M)}{P(D_G, D_M)}
+%}
+
+We assume that the genetic and morphological likelihoods are independent and that all of the other model parameters are independent of each other, so we can factorise the likelihood and the prior. We also don't need to calculate {% eqinline P(D) %} when using MCMC to estimate posterior distributions, so what BEAST2 actually calculates is, 
+
+{%eq 
+	P(\theta \mid D) \propto P(D_G \mid \mathcal{T}, \kappa, \Pi, \mu_G) P(D_M \mid \mathcal{T}, \phi, \mu_M) P(\mathcal{T} \mid \lambda, \gamma, p, t_0) P(\lambda) P(\gamma) P(p) P(t_0) P(\kappa) P(\Pi) P(\phi) P(\mu_G) P(\mu_M)
+%}
+
+In this nasty expression {% eqinline P(\mathcal{T} \mid \lambda, \gamma, p, t_0) %} is the tree prior (here the fossilized birth-death model), which is the only part of the prior that depends on other parameters. You can find all the model parameters by loading the XML file into BEAUti, or by locating the `<state>` section in the XML file.
+
+For computational reasons BEAST2 calculates log probabilities, which means values of {% eqinline -\infty %} correspond to prior or model probabilities of 0. When initialising, BEAST2 starts calculating all the parameter priors (because they don't depend on anything else), then the tree prior (which depends on some parameters), then the likelihoods and finally the posterior. To find the root of the problem we have to trace through our posterior calculation and find the component furthest downstream with a value of {% eqinline -\infty %}. When tracing through the error message above we see three parts of the model returned  {% eqinline -\infty %}:
+
+- _P(posterior) = -Infinity (was -Infinity)_
+- _P(prior) = -Infinity (was -Infinity)_
+- _P(ClockPrior.c:bears_irbp_fossils) = -Infinity (was -Infinity)_
+
+The likelihoods returned _NaN_ (not a number), which means BEAST2 crashed before they could be calculated (BEAST2 stops as soon as a model component returns {% eqinline -\infty %}). Thus, we can conclude that the model most likely failed when calculating the prior of the clock rate of the genetic alignment, {% eqinline \mu_G %} above. 
 
 To inspect the parameter and find the issue, we will first load the file into BEAUti.
 
 > Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
-> Switch to the **Priors** panel.
-> Click on the arrow left of the **clockRate.c:bears_irbp_fossils** to see the details of this prior ([Figure 9](#clockRatePrior)).
+> 
+> - Switch to the **Priors** panel.
+> - Click on the arrow left of the **clockRate.c:bears_irbp_fossils** to see the details of this prior ([Figure 9](#clockRatePrior)).
 >
 
 <figure>
 	<a id="clockRatePrior"></a>
 	<img style="width:80.0%;" src="figures/clockRatePrior.png" alt="">
-	<figcaption>Figure 9: Details of the clock rate prior.</figcaption>
+	<figcaption>Figure 9: Details of the genetic clock rate prior.</figcaption>
 </figure>
 <br>
 
-We can see that the clock rate prior was changed from the default, which is a uniform distribution from 0 to infinity, to a uniform distribution from 0 to 0.5. In general, changing this default prior is a good idea, as the default is extremely vague and very unlikely to be accurate. However, if we set a more narrow distribution we need to make sure that the starting value for the parameter is still within the range of the chosen distribution. For each parameter, the starting value is shown in the box to the right, as **initial = [x] [min, max]** ([Figure 10](#initialVal)). Here _x_ indicates the starting value and _min_ and _max_ the range of possible values for the corresponding parameter.
+We can see that the clock rate prior was changed from the default, which is a uniform distribution between 0 and infinity, to a uniform distribution between 0 and 0.5. In general, changing this default prior is a good idea, as the default is extremely vague, places far too much weight on very large and unrealistic values and is thus not an accurate description of our prior knowledge. It is also an improper prior (integrates to infinity), which can cause issues with model selection if the posterior then also integrates to infinity (in general it's difficult to know if using an improper prior will lead to a proper posterior, so it is recommended to not use improper priors).  
 
-<figure>
-	<a id="initialVal"></a>
-	<img style="width:80.0%;" src="figures/initialVal.png" alt="">
-	<figcaption>Figure 10: Initial values in the Priors panel.</figcaption>
-</figure>
-<br>
+Whenever we change a prior distribution from the default and especially when setting priors with hard bounds (e.g. a uniform or Beta distribution),  we need to make sure that the initial value of the parameter still falls within the bounds of the distribution. For each parameter, the initial value is shown in the box to the right, as **initial = [x] [min, max]**. Here _x_ indicates the initial value and _min_ and _max_ the range of possible values for the corresponding parameter.
 
 > Check the initial value of the **clockRate.c:bears_irbp_fossils** parameter in the box to the right of the parameter.
 > We can see that the box reads **initial = [1.0]**.
 >
 
-The initial value of the clock rate is thus set to **1.0**, which is outside the bounds of the chosen prior for this parameter. This is why the initialization failed.
+The initial value of the clock rate is set to **1.0**, which is outside the bounds of the prior for this parameter. This is why the initialization failed.
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **clockRate.c:bears_irbp_fossils** parameter.
-> Change the initial value in the **Value** box to **0.01** ([Figure 11](#initialClock)).
-> Click on **OK** to close the box.
-> Save the updated configuration as `issue3_1_fixed.xml` by navigating to **File > Save As**.>
-> Open **BEAST2** and select `issue3_1_fixed.xml` as the input file.
-> Start the run with the **Run** button. It works now!
+>
+> - Change the initial value in the **Value** box to **0.01** ([Figure 11](#initialClock)).
+> - Click on **OK** to close the box.
+> - Save the updated configuration as `issue3_1_fixed.xml` by navigating to **File > Save As**.>
+> - Open **BEAST2** and select `issue3_1_fixed.xml` as the input file.
+> - Start the run with the **Run** button. It works now!
 >
 
 <figure>
 	<a id="initialClock"></a>
-	<img style="width:50.0%;" src="figures/initialClock.png" alt="">
+	<img style="width:70.0%;" src="figures/initialClock.png" alt="">
 	<figcaption>Figure 11: Changing the initial value of the clock rate.</figcaption>
 </figure>
 <br>
+
+Using this procedure to trace through the calculation of the posterior you can always identify which model component is causing an initialization issue. Usually simple issues like initial values are the cause, but there are times when things are more complex.
+
+
+> **Topic for discussion**
+> 
+> In the XML file `issue3_1.xml`, is there a prior for the relative mutation rate in the Lewis MK model, {% eqinline \phi %}? 
+>
+> It is not shown in the initialization trace [Figure 8](#errorStarting), which means no explicit prior was set for this parameter. 
+> Is this a problem? If no prior distribution is set in the XML file, what prior is used for the parameter? 
+> 
 
 
 ### Troubleshooting a model issue
