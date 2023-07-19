@@ -8,7 +8,6 @@ beastversion: 2.7.x
 
 
 
-
 # Background
 
 Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
@@ -436,24 +435,26 @@ Note that changing this setting will never help if the analysis contains incompa
 > </details>
 >
 
+<br>
 
 
-
-## Common issue #4: Validation error when initializing object
+## Common issue #4: Validation error when parsing XML file
 
 > Download the BEAST input file `issue4.xml` and `issue4_working.xml`.
-> Open **BEAST2** and select the file `issue4.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 17](#errorParsing).
+> 
+> - Open **BEAST2** and select the file `issue4.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 17](#errorParsing).
 >
 
 <figure>
 	<a id="errorParsing"></a>
 	<img style="width:80.0%;" src="figures/errorParsing.png" alt="">
-	<figcaption>Figure 17: The return of the error message.</figcaption>
+	<figcaption>Figure 17: The return of the error message (issue4.xml).</figcaption>
 </figure>
 <br>
 
-Here the run failed to start because the XML configuration file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (_<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>_) and what is the issue (_Input 'tree' must be specified._). If we open the `issue5.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
+Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (_\<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>_) and what the issue is (_Input 'tree' must be specified._). If we open the `issue5.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
+
 ```xml
 	<log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology"/>
 ```
@@ -464,12 +465,38 @@ By comparing to a previous (working) analysis in the file `issue4_working.xml`, 
 As the error message told us, the **tree** element of the configuration is missing in the non-working XML file, so we need to add it back in.
 
 > Open the file `issue4.xml` in a text editor.
-> Modify **line 771** of the file to add the **tree="@Tree.t:bears"** element. Save the file as `issue4_fixed.xml`.
-> Open **BEAST2** and select the file `issue4_fixed.xml` as input file. Start the run with the **Run** button.
-> Now it works!
+> 
+> - Modify **line 771** of the file to add the `tree="@Tree.t:bears"` element. Save the file as `issue4_fixed.xml`.
+> - Open **BEAST2** and select the file `issue4_fixed.xml` as input file. 
+> - Start the run with the **Run** button. Now it works!
 >
 
-XML parsing errors usually occur when the XML file has been manually edited and parts of the configuration have been accidentally deleted or modified. This is why it's important to always keep a copy of the original XML when making manual edits, as this provides an easy way to check the correct configuration. Loading, saving and re-loading complex configurations into BEAUti repeatedly can also lead to parsing issues, although this is a bug and should be reported to the development team if it happens (for instance by opening an issue on [https://github.com/CompEvol/BeastFX/issues](https://github.com/CompEvol/BeastFX/issues). In general, if an XML parsing error occurs in a file which was generated entirely through BEAUti, then this bug should be reported to the development team.
+XML parsing errors usually occur when the XML file has been manually edited and parts of the configuration have been accidentally deleted or modified. This is why it's important to always keep a copy of the original XML file or use version control when making manual edits, as this provides an easy way to compare edits to a working configuration. Loading, saving and re-loading complex configurations into BEAUti repeatedly can also lead to parsing issues, although if this happens it is a bug and should be reported to the package developers if it happens (for instance by opening an issue on the package repository, findable in the BEAST2 package manager). In general, if an XML parsing error occurs in a file which was generated entirely through BEAUti, then this bug should be reported to the package developers.
+
+### Debugging BEAST2 XML (optional)
+
+Unless you know your way around the BEAST2 source code it can be difficult to know how to manually edit the components in an XML file. For instance, we already had a previous, working, analysis for the example above and could use that to debug the issue. But if we didn't have it, it may have taken us much longer to figure out how to specify the tree for the rate statistic component. 
+
+Fortunately, all of the components are documented in the BEAST2 XML manual at [http://www.beast2.org/xml/index.html](http://www.beast2.org/xml/index.html). If we search for `RateStatistic` in the left-hand panel, we see that `tree` is a required input ([Figure 17](#beastdoc)). 
+
+<figure>
+	<a id="beastdoc"></a>
+	<img style="width:100.0%;" src="figures/beastdoc.png" alt="">
+	<figcaption>Figure 17: The XML documentation for rate statistic.</figcaption>
+</figure>
+<br>
+
+However, there is a problem. The online manual is for BEAST v2.6.7 and may be outdated for some components. More importantly, the online documentation only contains components in the BEAST2 core and nothing in any of the packages we installed. Luckily we can easily generate the documenation for the version of BEAST2 and all packages we have installed using the **DocMaker** utility, which comes with BEAST2. 
+
+> Open a terminal and navigate to the directory where you want to save the BEAST2 XML manual
+> 
+> - Type `<beast2 path>/bin/applauncher DocMaker .` where `<beast 2 path>` should be replaced with the directory where BEAST2 is installed.
+> - Now open the newly generated `index.html` in any browser.
+>
+> This is also documented [here](http://www.beast2.org/2023/06/01/docmaker.html)
+
+The generated documentation should be for the version of BEAST2 that is installed and contain XML documentation for all packages that are installed. Note that while this documentation is extremely useful, it can still be very sparse for most components since most developers don't invest a lot of time in documentation.
+
 
 
 ## Error messages not covered in this tutorial
