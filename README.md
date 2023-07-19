@@ -8,6 +8,7 @@ beastversion: 2.7.x
 
 
 
+
 # Background
 
 Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
@@ -184,6 +185,8 @@ To make your life easier and avoid accidentally overwriting output files you can
 
 ## Common issue #3: Could not find a proper state to initialize
 
+<br>
+
 ### Troubleshooting a simple parameter issue
 
 > Download the BEAST input file `issue3_1.xml`.
@@ -265,7 +268,7 @@ To inspect the parameter and find the issue, we will first load the file into BE
 </figure>
 <br>
 
-We can see that the clock rate prior was changed from the default, which is a uniform distribution between 0 and infinity, to a uniform distribution between 0 and 0.5. In general, changing this default prior is a good idea, as the default is extremely vague, places far too much weight on very large and unrealistic values and is thus not an accurate description of our prior knowledge. It is also an improper prior (integrates to infinity), which can cause issues with model selection if the posterior then also integrates to infinity (in general it's difficult to know if using an improper prior will lead to a proper posterior, so it is recommended to not use improper priors).  
+We can see that the clock rate prior was changed from the default, which is a uniform distribution between 0 and infinity, to a uniform distribution between 0 and 0.5. In general, changing this default prior is a good idea, as the default is extremely vague, places far too much weight on very large and unrealistic values and is thus not an accurate description of our prior knowledge. 
 
 Whenever we change a prior distribution from the default and especially when setting priors with hard bounds (e.g. a uniform or Beta distribution),  we need to make sure that the initial value of the parameter still falls within the bounds of the distribution. For each parameter, the initial value is shown in the box to the right, as **initial = [x] [min, max]**. Here _x_ indicates the initial value and _min_ and _max_ the range of possible values for the corresponding parameter.
 
@@ -301,7 +304,22 @@ Using this procedure to trace through the calculation of the posterior you can a
 > It is not shown in the initialization trace [Figure 8](#errorStarting), which means no explicit prior was set for this parameter. 
 > Is this a problem? If no prior distribution is set in the XML file, what prior is used for the parameter? 
 > 
+> <details>
+	<summary>Answer</summary>
+> 
+> If no prior is set for a parameter the implicit prior becomes a uniform distribution between the parameter bounds. In the case of the mutation rate (called <i>mutationRate.s:bears_morphology2</i> in the XML file), no bounds are set either, so it inherits the default bounds of a real parameter in BEAST2, which is between negative and positive infinity. 
+> <br><br>
+> In this case it probably doesn't affect the parameter estimates very much, however an unbounded uniform prior is a bad idea for this parameter for exactly the same reasons it is a bad choice for the clock rate. 
+> <br><br>
+> More importantly, "hidden" priors like these are a problem when doing model selection. An unbounded uniform prior is an improper prior (there exists no normalising constant that can make it integrate to 1, so it integrates to infinity). Improper priors can cause issues with model selection if the posterior then also integrates to infinity. In general it's impossible to know if using an improper prior will lead to a proper posterior, so it is recommended to not use improper priors (we can only know if the posterior is proper if we can analytically integrate it, which is usually not the case for BEAST models). It is always possible to set some sensible parameter bounds, so we can always make all of our priors proper. 
+> <br><br>
+> Finding out if there are "hidden" priors in your model is more complex, especially when the BEAUti template for a model doesn't explicitly initialize priors for all model parameters. You can navigate to the <b>Initialization</b> panel in BEAUti (click <b>View > Show Initialization panel</b> to display it) to check if all model parameters also have prior distributions set, but it is unfortunately not possible to add a missing prior in BEAUti. If you've identified such a model parameter then you would need to add the prior by manually editing the XML file. It is also a good idea to contact the package developers, so they can address the issue in future releases.
+>
+> </details>
+>
 
+
+<br>
 
 ### Troubleshooting a model issue
 
@@ -383,13 +401,19 @@ Next, we will inspect the starting values of the parameters of the FBD model, fo
 <br>
 
 
-### Increasing the number of initialization attempts
+### Using a different seed or increasing the number of initialization attempts
 
-If there is no obvious incompatibility in the setup of the analysis, it is possible that the problem is simply due to bad luck rather than a fundamental problem in the analysis. This is rare, but it can happen with complex configurations or with packages and models which are still under development. By default, **BEAST2** will try to initialize the analysis **10** times before giving up, but it is possible to increase the number of attempts.
+If there is no obvious incompatibility in the setup of the analysis, it is possible that the problem is simply due to bad luck rather than a fundamental problem in the analysis. During initialization some model components are randomly initialized. In a standard analysis this is just the starting tree, but could also be other model components, depending on the models and packages used. It is possible that the random starting tree is just extremely unlikely under the model configuration and causes initialization to fail. This is rare, but it can happen with complex configurations or with packages and models that are still under development. 
+
+For randomly initialized model components the random number seed is very important and if a specific seed was used to run the analysis then changing it may indeed help, as suggested by BEAST2 ([Figure 8](#errorStarting)). However, if no seed is provided to BEAST2 then the seed is itself random and a different seed is used each time the analysis is attempted. 
+
+
+To save time rerunning the same analysis with many different seeds, BEAST2 by default tries to initialize an analysis **10** times before giving up, but it is possible to increase the number of attempts.
 
 > Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
-> Switch to the **MCMC** tab.
-> The number of initialization attempts is controlled by the **Num Initialization Attempts** setting, shown in [Figure 16](#numInit).
+> 
+> - Switch to the **MCMC** tab.
+> - The number of initialization attempts is controlled by the **Num Initialization Attempts** setting, shown in [Figure 16](#numInit).
 >
 
 <figure>
@@ -399,7 +423,20 @@ If there is no obvious incompatibility in the setup of the analysis, it is possi
 </figure>
 <br>
 
-Note that changing this setting will never help if the analysis contains incompatibilities. In the case of the `issue3_1.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed.
+Note that changing this setting will never help if the analysis contains incompatibilities (or any of the issues above). In the case of the `issue3_1.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
+
+> **Topic for discussion**
+>
+> If no model components are randomly initialised does the random number seed still have an effect on the analysis? 
+> 
+> <details>
+	<summary>Answer</summary>
+> 
+> Yes, it still makes a difference! Although each analysis will start at the exact same point in the posterior, the random number seed is important for initializing the operators, used to make proposals in the MCMC run. Thus, each random number seed will result in a unique trajectory followed across the posterior.
+> </details>
+>
+
+
 
 
 ## Common issue #4: Validation error when initializing object
