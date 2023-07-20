@@ -10,7 +10,9 @@ beastversion: 2.7.x
 
 # Background
 
-Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. In this tutorial, we will show examples of common issues and learn how to diagnose and fix them.
+Many different problems can prevent a BEAST2 analysis from starting, from technical and file issues to incompatibilities in the model setup. Most analyses setup in BEAUti will run out-of-the-box, but as soon as you start tinkering with prior distributions and initial values the chance of running into an issue starts rising. This shouldn't act to discourage you from editing the default priors and initial values! You should **always** consider all priors and initial values and edit them if the default values don't make sense for your analysis. 
+
+In this tutorial, we will show some examples of common issues and learn how to diagnose and fix them. Most of the initialization issues you are likely to encounter should be similar to one of the issues presented below. The more issues you encounter and fix the easier it will become to solve issues and get your BEAST analysis to start! 
 
 ----
 
@@ -34,7 +36,7 @@ We will need to perform some manual edits on the XML files produced by BEAUti, f
 
 ----
 
-# Practical: Troubleshooting initialization issues
+# Practical: Getting BEAST2 to start
 
 ## The Data
 
@@ -55,7 +57,7 @@ Examples in this tutorial require the **SA** (Sampled Ancestors) package to be i
 </figure>
 <br>
 
-The **SA** package may already be installed, as in BEAST 2.7 it is often installed by default. Otherwise, install it by doing the following.
+The **SA** package may already be installed. Otherwise, install it by doing the following.
 
 > Install the **SA** package by selecting it and clicking the **Install/Upgrade** button ([Figure 2](#packageSA)).
 > 
@@ -77,19 +79,21 @@ The **SA** package may already be installed, as in BEAST 2.7 it is often install
 </figure>
 <br>
 
-The reason for uninstalling the MM package will become clear later. If the MM package wasn't installed already then clicking uninstall will have no effect.
+The reason for uninstalling the MM package will become clear later. If the MM package wasn't installed then clicking uninstall will have no effect.
 
 BEAUti needs to be closed for the newly installed packages to be loaded properly.
 
 > Close the **BEAST2 Package Manager** and **BEAUti**.
 > 
 
+<br>
 
 ## Common issue #1: Class could not be found
 
 > Download the BEAST2 input file `issue1.xml`.
-> Open **BEAST2** and select the file `issue1.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 4](#errorPackage).
+> 
+> - Open **BEAST2** and select the file `issue1.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 4](#errorPackage).
 >
 
 <figure>
@@ -119,6 +123,7 @@ required="BEAST.base v2.7.4:SA v2.1.1:MM v1.2.1"
 However, keep in mind that if the XML file was manually edited then it is possible that not all required packages are listed in the XML header. In these cases you have to examine the missing component error to fix the issue. 
 
 > Open `issue1.xml` in a text editor and remove the **MM** package from the requirements. Save the file and run it in **BEAST2**. 
+>
 > Did the error message change?
 >
 
@@ -128,18 +133,20 @@ There are still times when this strategy won't work (the package is messy, conta
 
 
 > Following the same process as for the **SA** package, open the **BEAST2 Package Manager** in **BEAUti** and install the **MM** package.
+> 
 > Close and reopen **BEAST2** and run the file `issue1.xml` again, checking that it now initializes and runs.
 >
 
 
-
+<br>
 
 
 ## Common issue #2: Output files already exist
 
 > Download the BEAST2 input file `issue2.xml` in the same folder as `issue`1`.xml`.
-> Open **BEAST2** and select the file `issue2.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 5](#errorOverwrite).
+>
+> - Open **BEAST2** and select the file `issue2.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 5](#errorOverwrite).
 >
 
 <figure>
@@ -171,7 +178,7 @@ To solve this problem, there are three possibilities:
 </figure>
 <br>
 
-- If you would like to create new files, either move the original files, move the XML file, or change the names of the log and tree files in the new analysis.
+- If you would like to create new files, either move the original files, move the XML file, or change the names of the `.log` and `.tree` files in the new analysis.
 
 > Open **BEAUti** and load the file `issue2.xml`.
 > - In the **MCMC** panel, expand the options for the **tracelog** by clicking on the arrow to the left. Change the **File Name** to `bears_longer.log`.
@@ -179,12 +186,16 @@ To solve this problem, there are three possibilities:
 > - Save the file `issue2.xml`. Run it in **BEAST2** again, and check that it now works.
 >
 
-To make your life easier and avoid accidentally overwriting output files you can use the variables `$(filebase)`, `$(seed)` and `$(tree)` in the names for the `.log` and `.tree` files. When you run the analysis `$(filebase)` will be replaced by the name of the XML file (without the `.xml` extension), and `$(seed)` by the random number seed (useful for reproducing exactly the same analysis). The `$(tree)` variable can be used to label different `.tree` files when an analysis has more than one tree. Since BEAST 2.7 the default `.log` filename is `$(filebase).log` and the default `.tree` file name is `$(filebase)-$(tree).trees`. 
+**This issue may seem simple and straightforward, but it has been the cause of countless hours of delays and lost computing time!**
 
+To make your life easier and avoid accidentally overwriting output files you can use the variables `$(filebase)`, `$(seed)` and `$(tree)` in the names for the `.log` and `.tree` files. When you run the analysis `$(filebase)` will be replaced by the name of the XML file (without the `.xml` extension), and `$(seed)` by the random number seed (useful for reproducing exactly the same analysis). The `$(tree)` variable can be used to label different `.tree` files when an analysis contains more than one tree. Since BEAST 2.7 the default `.log` filename is `$(filebase).log` and the default `.tree` file name is `$(filebase)-$(tree).trees`. 
+
+
+<br>
 
 ## Common issue #3: Could not find a proper state to initialize
 
-<br>
+
 
 ### Troubleshooting a simple parameter issue
 
@@ -203,7 +214,7 @@ To make your life easier and avoid accidentally overwriting output files you can
 </figure>
 <br>
 
-The inference failed to start because a good initial state could not be found, as explained by the error message (_Fould not find a proper state to initialise. Perhaps try another seed_). This issue is much more complex to diagnose than the previous ones, as it can be caused by many different parts of the analysis configuration. The suggestion to try another seed is not a very good one and we will come back to it in the **"Number of initialization attempts"** section below. 
+The inference failed to start because a good initial state could not be found, as explained by the error message (_Could not find a proper state to initialise. Perhaps try another seed_). This issue is much more complex to diagnose than the previous ones, as it can be caused by many different parts of the analysis configuration. The suggestion to try another seed is not a very good one and we will come back to it in the **"Number of initialization attempts"** section below. 
 
 Above the error message BEAST2 traces through its attempt to calculate an initial value for the posterior. We can use this trace to figure out which model component is responsible for the issue. Remember that the posterior is given by Bayes' formula,
 
@@ -211,22 +222,22 @@ Above the error message BEAST2 traces through its attempt to calculate an initia
 	P(\theta \mid D) = \frac{P(D \mid \theta) P(\theta)}{P(D)}
 %}
 
-where {% eqinline \theta %} is a vector of all the model parameters and {% eqinline D %} is the data, here consisting of the genetic data, {% eqinline D_G %} and the morphological data, {% eqinline D_M %}. In the equation above {% eqinline P(D \mid \theta) %} is the likelihood and {% eqinline P(\theta) %}, the prior. 
+where {% eqinline \theta %} is a vector of all the model parameters and {% eqinline D %} is the data, here consisting of the genetic data, {% eqinline D_G %} and the morphological data, {% eqinline D_M %}. In the equation above {% eqinline P(D \mid \theta) %} is the likelihood and {% eqinline P(\theta) %} the prior. 
 
 In our model we are estimating the following parameters:
 
 - Tree, {% eqinline \mathcal{T} %}
-- Fossilized birth-death model:
+- Fossilized birth-death (FBD) model:
 	- Diversification rate, {% eqinline \lambda %} 
 	- Turnover, {% eqinline \gamma %}
 	- Sampling proportion, {% eqinline p %}
 	- Origin time, {% eqinline t_0 %}
 - HKY nucleotide substitution model:
 	- Transition/transversion ratio, {% eqinline \kappa %} 
-	- Nucleotide frequencies, {% eqinline \Pi = (\pi_A, \pi_C, \pi_G, \pi_T) %}
+	- Nucleotide equilibrium frequencies, {% eqinline \Pi = (\pi_A, \pi_C, \pi_G, \pi_T) %}
 - Lewis MK morphological trait substitution model:
 	- Relative mutation rate, {% eqinline \phi %}
-- Strict clock model:
+- Strict clock models:
 	- Nucleotide substitution rate, {% eqinline \mu_G %}
 	- Morphological trait substitution rate, {% eqinline \mu_M %}
 
@@ -236,7 +247,7 @@ Thus, we can write the posterior as,
 	P(\theta \mid D) = \frac{P(D_G, D_M \mid \mathcal{T}, \lambda, \gamma, p, t_0, \kappa, \Pi, \phi, \mu_G, \mu_M) P(\mathcal{T}, \lambda, \gamma, p, t_0, \kappa, \Pi, \phi, \mu_G, \mu_M)}{P(D_G, D_M)}
 %}
 
-We assume that the genetic and morphological likelihoods are independent and that all of the other model parameters are independent of each other, so we can factorise the likelihood and the prior. We also don't need to calculate {% eqinline P(D) %} when using MCMC to estimate posterior distributions, so what BEAST2 actually calculates is, 
+We assume that the genetic and morphological likelihoods are independent and that all of the other model parameters are independent of each other (except for the tree, which is generated by the FBD parameters), so we can factorise the likelihood and the prior. We also don't need to calculate {% eqinline P(D) %} when using MCMC to estimate posterior distributions, so what BEAST2 actually calculates is, 
 
 {%eq 
 	P(\theta \mid D) \propto P(D_G \mid \mathcal{T}, \kappa, \Pi, \mu_G) P(D_M \mid \mathcal{T}, \phi, \mu_M) P(\mathcal{T} \mid \lambda, \gamma, p, t_0) P(\lambda) P(\gamma) P(p) P(t_0) P(\kappa) P(\Pi) P(\phi) P(\mu_G) P(\mu_M)
@@ -244,7 +255,7 @@ We assume that the genetic and morphological likelihoods are independent and tha
 
 In this nasty expression {% eqinline P(\mathcal{T} \mid \lambda, \gamma, p, t_0) %} is the tree prior (here the fossilized birth-death model), which is the only part of the prior that depends on other parameters. You can find all the model parameters by loading the XML file into BEAUti, or by locating the `<state>` section in the XML file.
 
-For computational reasons BEAST2 calculates log probabilities, which means values of {% eqinline -\infty %} correspond to prior or model probabilities of 0. When initialising, BEAST2 starts calculating all the parameter priors (because they don't depend on anything else), then the tree prior (which depends on some parameters), then the likelihoods and finally the posterior. To find the root of the problem we have to trace through our posterior calculation and find the component furthest downstream with a value of {% eqinline -\infty %}. When tracing through the error message above we see three parts of the model returned  {% eqinline -\infty %}:
+For computational reasons BEAST2 calculates log probabilities, which means values of {% eqinline -\infty %} correspond to prior or model probabilities of 0. When initialising, BEAST2 attempts to calculate {% eqinline P(\theta \mid D) %}. To do so, it recursively attempts to calculate all of the parts of the posterior, until it reaches a density that can be evaluated without calculating anything else. Thus it firsts calculates all the parameter priors (because they don't depend on anything else), then the tree prior (which depends on some parameters), then the likelihoods and finally the posterior. To find the root of the problem we have to trace through our posterior calculation and find the component furthest downstream with a value of {% eqinline -\infty %}. When tracing through the error message above we see three parts of the model returned  {% eqinline -\infty %}:
 
 - _P(posterior) = -Infinity (was -Infinity)_
 - _P(prior) = -Infinity (was -Infinity)_
@@ -308,11 +319,12 @@ Using this procedure to trace through the calculation of the posterior you can a
 > 
 > If no prior is set for a parameter the implicit prior becomes a uniform distribution between the parameter bounds. In the case of the mutation rate (called <i>mutationRate.s:bears_morphology2</i> in the XML file), no bounds are set either, so it inherits the default bounds of a real parameter in BEAST2, which is between negative and positive infinity. 
 > <br><br>
-> In this case it probably doesn't affect the parameter estimates very much, however an unbounded uniform prior is a bad idea for this parameter for exactly the same reasons it is a bad choice for the clock rate. 
+> In this case it doesn't make any difference. Although the parameter is estimated, the Delta exchange operator on it parameter constrains it to be always equal to one (it would probably have made more sense to just fix the parameter though). 
 > <br><br>
+> In general though, an unbounded uniform prior is a bad idea for most parameters for exactly the same reasons it is a bad choice for the clock rate. 
 > More importantly, "hidden" priors like these are a problem when doing model selection. An unbounded uniform prior is an improper prior (there exists no normalising constant that can make it integrate to 1, so it integrates to infinity). Improper priors can cause issues with model selection if the posterior then also integrates to infinity. In general it's impossible to know if using an improper prior will lead to a proper posterior, so it is recommended to not use improper priors (we can only know if the posterior is proper if we can analytically integrate it, which is usually not the case for BEAST models). It is always possible to set some sensible parameter bounds, so we can always make all of our priors proper. 
 > <br><br>
-> Finding out if there are "hidden" priors in your model is more complex, especially when the BEAUti template for a model doesn't explicitly initialize priors for all model parameters. You can navigate to the <b>Initialization</b> panel in BEAUti (click <b>View > Show Initialization panel</b> to display it) to check if all model parameters also have prior distributions set, but it is unfortunately not possible to add a missing prior in BEAUti. If you've identified such a model parameter then you would need to add the prior by manually editing the XML file. It is also a good idea to contact the package developers, so they can address the issue in future releases.
+> Finding out if there are "hidden" priors in your model is more complex, especially when the BEAUti template for a model doesn't explicitly initialize priors for all model parameters. You can navigate to the <b>Initialization</b> panel in BEAUti (click <b>View > Show Initialization panel</b> to display it) to check if all model parameters also have prior distributions set (by comparing with the <b>Priors</b> panel), but it is unfortunately not possible to add a missing prior from BEAUti. If you've identified such a model parameter then you would need to add the prior by manually editing the XML file. It is also a good idea to contact the package developers, so they can address the issue in future releases.
 >
 > </details>
 >
@@ -322,7 +334,7 @@ Using this procedure to trace through the calculation of the posterior you can a
 
 ### Troubleshooting incompatibilities between model components
 
-In the example above the incompatibility was just within one parameter that was out of the bounds of its prior. When one model parameter appears in multiple model components, then incompatibilities between different model components can lead to the posterior evaluating to negative infinity. This most often involves the tree, which appears in many model components. If, in addition, MRCA priors with hard bounds or offsets are set, or the starting tree is fixed, the probability for an incompatibility is much higher. 
+In the example above the incompatibility was just within one parameter that was out of the bounds of its prior. When one model parameter appears in multiple model components, incompatibilities between different model components can lead to the posterior evaluating to negative infinity. This most often involves the tree, which appears in many model components. If, in addition, MRCA priors with hard bounds or offsets are set, or the starting tree is fixed, the probability for an incompatibility is much higher. 
 
 One particular example occurs with birth-death models where the origin parameter is estimated (such as the BDSKY, BDMM or FBD models). 
 
@@ -339,9 +351,9 @@ One particular example occurs with birth-death models where the origin parameter
 </figure>
 <br>
 
-Here the message (_Initial value of origin (100.0) should be greater than initial root height (125.1)_) indicates clearly what is going on: we have specified an origin parameter with an initial value which is incompatible with the initial tree (by definition the origin should be larger than the height of the tree). 
+While this is a validation issue, the error message is different to the example above. Here the message (_Initial value of origin (100.0) should be greater than initial root height (125.1)_) indicates clearly what is going on: we have specified an origin parameter with an initial value which is incompatible with the initial tree (by definition the origin should be larger than the height of the tree). 
 
-Unfortunately, while it is straightforward to create an XML file with this error in BEAUti, it cannot be loaded into BEAUti again for editing (give it a try). This is because BEAUti does more than simply write XML code to files. While editing the XML file, BEAUti also instantiates the model (using the same code that BEAST2 uses to run the model). This is done to ensure that BEAUti only produces XML files containing BEAST2 analyses with the correct syntax. Similarly, when loading an XML file into BEAUti, the model is instantiated. If doing so returns any errors, BEAUti cannot load the XML file. This would be the case if, for example the XML file contains syntax errors, or it refers to classes in packages that are not installed. In this particular case, the fossilized birth-death model checks that the initial value of the origin parameter is greater than the height of the starting tree. Sinc this is not the case here, the model throws an error and BEAUti fails to load the XML file. To correct this error we can either recreate the whole XML file from scratch in BEAUti, or quickly edit it in a text editor.
+Unfortunately, while it is straightforward to create an XML file with this error in BEAUti, it cannot be loaded into BEAUti again for editing (give it a try). This is because BEAUti does more than simply write XML code to files. While editing the XML file, BEAUti also instantiates the model (using the same code that BEAST2 uses to run the model). This is done to ensure that BEAUti only produces XML files containing BEAST2 analyses with the correct syntax. Similarly, when loading an XML file into BEAUti, the model is instantiated. If doing so returns any errors, BEAUti cannot load the XML file. This would be the case if, for example the XML file contains syntax errors, or it refers to classes in packages that are not installed. In this particular case, the FBD model checks that the initial value of the origin parameter is greater than the height of the starting tree. Since this is not the case here, the model throws an error and BEAUti fails to load the XML file. To correct this error we can either recreate the whole XML file from scratch in BEAUti, or quickly edit it in a text editor.
 
 > Open the `issue5.xml` file in a text editor.
 > - Look for the parameter **originFBD.t:bears** and examine its initial value.
@@ -377,7 +389,7 @@ Some other common cases where inconsistencies between model components can lead 
 - When an initial tree is specified for a structured analysis that is incompatible with the initial parameter values of the migration model.
 - When the initial values for rates are set to 0, for instance setting the initial value of the sampling rate (of a birth-death model) to 0 means that it is impossible to have observed any samples, so every tree has a probability of 0 under the model.
 
-
+Some more common model incompatibilities are also listed [here](http://www.beast2.org/2018/07/04/fatal-errors.html).
 
 <br>
 
@@ -396,7 +408,7 @@ Some other common cases where inconsistencies between model components can lead 
 </figure>
 <br>
 
-As before, **BEAST2** could not find a valid state to start the inference. This time there are finite values for all of the simple parameter priors, meaning that all of the initial values fall within the prior bounds. The two exceptions are the fossilized birth-death process tree prior, which reads _P(FBD.t:bears) = -Infinity_ and an MRCA prior on the root of the tree (that was not present in the previous analysis), which reads _P(root.prior) = NaN_, meaning it was not evaluated before BEAST2 crashed. Thus, we can conclude that the issue likely has something to do with the calculation of the FBD density. The FBD prior is a tree prior, and depends on the tree as well as several other parameters, so there are several possible causes for the issue:
+As before, **BEAST2** could not find a valid state to start the inference. This time there are finite values for all of the simple parameter priors, meaning that all of the initial values fall within the prior bounds. The two exceptions are the FBD tree prior, which reads _P(FBD.t:bears) = -Infinity_ and an MRCA prior on the root of the tree, which reads _P(root.prior) = NaN_, meaning it was not evaluated before BEAST2 crashed. Thus, we can conclude that the issue likely has something to do with the calculation of the FBD density. The FBD prior is a tree prior, and depends on the tree as well as several other parameters, so there are several possible causes for the issue:
 
 -  **An issue with the initial tree:** the inference will not start if the initial tree is impossible under the specified tree model or MRCA constraints. By default, most analyses use a simple coalescent model to simulate a random initial tree that respects all MRCA constraints. However, with more complex models, or incompatible MRCA priors, the simulation process can fail to find a good tree. Similarly, when there are additional constraints on the tree that are not encoded in MRCA priors (as with the origin parameter in the example above), the simulated tree can also be incompatible. In such cases the simulation either needs to be fine-tuned to satisfy the constraints, or a valid initial tree should be provided to the analysis. 
 -  **An issue with the initial parameter values:** if the initial values set in the analysis are very far from plausible, the resulting density of the model will be extremely small. Because of the limitations of floating point arithmetic used by computers, numbers with very large magnitudes get approximated to positive or negative infinity and numbers with very small magnitudes to zero. That means for very improbable parameter combinations, the density of a model, {% eqinline P(\theta) \approx 0 %}. Usually, calculations are done in logspace to alleviate this effect, however for extremely unlikely parameter combinations we will have {% eqinline \log P(\theta) \approx -\infty %}. Most of the parametric prior distributions available in BEAST2 only tend to 0 as the parameter tends to infinity, making it very unlikely to encounter numerical underflow issues with these distributions. However, more complex distributions, like tree priors, have complex, high-dimensional density landscapes and it is entirely possible that a parameter combination that works for one model evaluates to negative infinity for a related model. 
@@ -440,7 +452,7 @@ Let's import our starting tree in Icytree to check if the root age is compatible
 > Open Icytree ([https://icytree.org/](https://icytree.org/)) in a web browser.
 >
 > - Copy the Newick string from the **Starting tree** panel or from the XML file.
-> - In the IcyTree browser window click **File > Enter tree directly**
+> - In the IcyTree browser window click **File > Enter tree directly**.
 > - Paste the copied Newick string and press **Done** to display the tree in IcyTree. 
 >
 
@@ -477,7 +489,7 @@ Next, we will inspect the initial values of the parameters of the FBD model, fou
 
 ### Using a different seed or increasing the number of initialization attempts
 
-If there is no obvious incompatibility in the setup of the analysis, it is possible that the problem is simply due to bad luck rather than a fundamental problem in the analysis. During initialization some model components are randomly initialized. In a standard analysis this is just the starting tree, but could also be other model components, depending on the models and packages used. It is possible that the random starting tree is just extremely unlikely under the model configuration and causes initialization to fail. This is rare, but it can happen with complex configurations or with packages and models that are still under development. 
+If there are no obvious incompatibilities in the analysis setup, it is possible that the problem is simply due to bad luck rather than a fundamental problem with the setup. During initialization some model components are randomly initialized. In a standard analysis this is just the starting tree, but could also be other model components, depending on the models and packages used. It is possible that the random starting tree is just extremely unlikely under the model configuration and causes initialization to fail. This is rare, but it can happen with complex configurations or with packages and models that are still under development. 
 
 For randomly initialized model components the random number seed is very important and if a specific seed was used to run the analysis then changing it may indeed help, as suggested by BEAST2 ([Figure 8](#errorStarting)). However, if no seed is provided to BEAST2 then the seed is itself random and a different seed is used each time the analysis is attempted. 
 
@@ -497,7 +509,7 @@ To save time rerunning the same analysis with many different seeds, BEAST2 by de
 </figure>
 <br>
 
-Note that changing this setting will never help if the analysis contains incompatibilities (or any of the issues above). In the case of the `issue3_1.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
+Note that changing this setting will never help if the analysis contains incompatibilities (or any of the other issues above). In the case of the `issue3_1.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
 
 > **Topic for discussion**
 >
@@ -506,7 +518,7 @@ Note that changing this setting will never help if the analysis contains incompa
 > <details>
 	<summary>Answer</summary>
 > 
-> Yes, it still makes a difference! Although each analysis will start at the exact same point in the posterior, the random number seed is important for initializing the operators, used to make proposals in the MCMC run. Thus, each random number seed will result in a unique trajectory followed across the posterior.
+> Yes, it still makes a difference! Although each analysis will start from the exact same point in the posterior landscape, the random number seed is important for initializing the operators, used to make proposals in the MCMC run. Thus, each random number seed will result in a unique trajectory followed across the posterior. However, it is a good idea to initialize at least some model components randomly, as always starting with the same initial values can mean we get stuck in a local optimum. (Keep in mind that in the case of large trees a random initial tree will take extremely long to burn in and for pragmatic reasons a "good" initial tree is often used).
 > </details>
 >
 
@@ -531,11 +543,11 @@ Note that changing this setting will never help if the analysis contains incompa
 Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (_\<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>_) and what the issue is (_Input 'tree' must be specified._). If we open the `issue5.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
 
 ```xml
-	<log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology"/>
+<log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology"/>
 ```
 By comparing to a previous (working) analysis in the file `issue4_working.xml`, we can see that the correct configuration should be (line 733):
 ```xml
-	<log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology" tree="@Tree.t:bears"/>
+<log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology" tree="@Tree.t:bears"/>
 ```
 As the error message told us, the **tree** element of the configuration is missing in the non-working XML file, so we need to add it back in.
 
@@ -546,11 +558,11 @@ As the error message told us, the **tree** element of the configuration is missi
 > - Start the run with the **Run** button. Now it works!
 >
 
-XML parsing errors usually occur when the XML file has been manually edited and parts of the configuration have been accidentally deleted or modified. This is why it's important to always keep a copy of the original XML file or use version control when making manual edits, as this provides an easy way to compare edits to a working configuration. Loading, saving and re-loading complex configurations into BEAUti repeatedly can also lead to parsing issues, although if this happens it is a bug and should be reported to the package developers if it happens (for instance by opening an issue on the package repository, findable in the BEAST2 package manager). In general, if an XML parsing error occurs in a file which was generated entirely through BEAUti, then this bug should be reported to the package developers.
+XML parsing errors usually occur when the XML file has been manually edited and parts of the configuration have been accidentally deleted or modified. This is why it's important to always keep a copy of the original XML file or use version control when making manual edits, as this provides an easy way to compare edits to a working configuration. Loading, saving and re-loading complex configurations into BEAUti repeatedly can also lead to parsing issues, although if this happens it is a bug and should be reported to the package developers (for instance by opening an issue on the package repository, findable in the BEAST2 package manager). In general, if an XML parsing error occurs in a file which was generated entirely through BEAUti, then this bug should be reported to the package developers.
 
 ### Debugging BEAST2 XML (optional)
 
-Unless you know your way around the BEAST2 source code it can be difficult to know how to manually edit the components in an XML file. For instance, we already had a previous, working, analysis for the example above and could use that to debug the issue. But if we didn't have it, it may have taken us much longer to figure out how to specify the tree for the rate statistic component. 
+Unless you know your way around the BEAST2 source code it can be difficult to know how to manually edit the components in an XML file. In the example above, we already had a previous, working analysis and could use that to debug the issue. But if we didn't have it, it may have taken us much longer to figure out how to specify the tree for the rate statistic component. 
 
 Fortunately, all of the components are documented in the BEAST2 XML manual at [http://www.beast2.org/xml/index.html](http://www.beast2.org/xml/index.html). If we search for `RateStatistic` in the left-hand panel, we see that `tree` is a required input ([Figure 17](#beastdoc)). 
 
@@ -570,13 +582,13 @@ However, there is a problem. The online manual is for BEAST v2.6.7 and may be ou
 >
 > This is also documented [here](http://www.beast2.org/2023/06/01/docmaker.html)
 
-The generated documentation should be for the version of BEAST2 that is installed and contain XML documentation for all packages that are installed. Note that while this documentation is extremely useful, it can still be very sparse for most components since most developers don't invest a lot of time in documentation.
+The generated documentation should be for the version of BEAST2 that is installed and contain XML documentation for all packages that are installed. Note that while this documentation is extremely useful, it can still be very sparse for most components since most developers don't invest a lot of time in documentation. Most BEAST2 packages come with some example XML files and these can also be very useful for figuring out how to specify models that cannot be specified in BEAUti. You can locate the directory where a package (and its example XML files) is installed from BEAUti by navigating to **File > Set working dir** and selecting a package. If you then try to open a file BEAUti will open in the directory where that package is installed. 
 
 
 
 ## Error messages not covered in this tutorial
 
-Many different issues can occur in **BEAST2**, and it is impossible to cover them all in this tutorial. However, one important thing to keep in mind is that **BEAST2** will always attempt to provide some information on the issue it has encountered. Thus it is critical to carefully read the error messages, as in all of the examples in this tutorial. While the error messages may not always be very insightful, there is usually enough information in there to solve most common issues. 
+Many different issues can occur in **BEAST2**, and it is impossible to cover them all in this tutorial. However, one important thing to keep in mind is that **BEAST2** will always attempt to provide some information on the issue it has encountered. Thus it is critical to carefully read the error messages, as in all of the examples in this tutorial. While the error messages may not always be very insightful, they usually contain enough information to solve most common issues. 
 
 For the issues that cannot be easily debugged it is recommended to contact the package developers, or to make a post on [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users). If it is a common issue it is likely that someone else has encountered it before you! 
 
@@ -586,7 +598,7 @@ In the rare case where BEAST2 initializes an analysis without any problems and t
 
 # Acknowledgment
 
-Many examples in this tutorial are inspired by real issues encountered during the analysis of the convergent evolution of true crabs {% cite Wolfe2022 --file Troubleshooting-initialization-issues/master-refs %}.
+The complex parameter issue example in this tutorial was inspired by a real issue encountered during the analysis of the convergent evolution of true crabs {% cite Wolfe2022 --file Troubleshooting-initialization-issues/master-refs %}.
 
 
 # Useful Links
@@ -595,6 +607,8 @@ Many examples in this tutorial are inspired by real issues encountered during th
 - BEAST 2 website and documentation: [http://www.beast2.org/](http://www.beast2.org/)
 - BEAST 1 website and documentation: [http://beast.bio.ed.ac.uk](http://beast.bio.ed.ac.uk)
 - Join the BEAST user discussion: [http://groups.google.com/group/beast-users](http://groups.google.com/group/beast-users) 
+- [BEAST 2 XML documentation](http://www.beast2.org/xml/index.html) and how to compile it for your own setup: [http://www.beast2.org/2023/06/01/docmaker.html](http://www.beast2.org/2023/06/01/docmaker.html)
+- Some common reasons why BEAST 2 may fail to find a valid initial state: [http://www.beast2.org/2018/07/04/fatal-errors.html](http://www.beast2.org/2018/07/04/fatal-errors.html)
 
 ----
 
