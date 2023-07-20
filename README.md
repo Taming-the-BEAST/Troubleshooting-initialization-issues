@@ -381,27 +381,28 @@ Some other common cases where inconsistencies between model components can lead 
 
 <br>
 
-### Troubleshooting a model issue
+### Troubleshooting a complex parameter issue
 
 > Download the BEAST input file `issue3_2.xml`.
-> Open **BEAST2** and select the file `issue3_2.xml` as input file. Start the run with the **Run** button.
-> You should get an error message, as shown in [Figure 12](#errorStarting2).
+>
+> - Open **BEAST2** and select the file `issue3_2.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 12](#errorStarting2).
 > 
 
 <figure>
 	<a id="errorStarting2"></a>
 	<img style="width:80.0%;" src="figures/errorStarting2.png" alt="">
-	<figcaption>Figure 12: A similar error message as earlier.</figcaption>
+	<figcaption>Figure 12: A similar error message as earlier (issue3_2.xml).</figcaption>
 </figure>
 <br>
 
-As in the previous section, **BEAST2** could not find a valid state to start the inference. This time the message reads _P(FBD.t:bears) = -Infinity_, showing that the issue likely appears in the calculation of the FBD likelihood. The FBD prior is a tree prior, and depends on the tree as well as several other parameters, so there are several possible causes for the calculation issue:
+As before, **BEAST2** could not find a valid state to start the inference. This time there are finite values for all of the simple parameter priors, meaning that all of the initial values fall within the prior bounds. The two exceptions are the fossilized birth-death process tree prior, which reads _P(FBD.t:bears) = -Infinity_ and an MRCA prior on the root of the tree (that was not present in the previous analysis), which reads _P(root.prior) = NaN_, meaning it was not evaluated before BEAST2 crashed. Thus, we can conclude that the issue likely has something to do with the calculation of the FBD density. The FBD prior is a tree prior, and depends on the tree as well as several other parameters, so there are several possible causes for the issue:
 
--  a bug in the likelihood calculation itself: BEAST2 packages can contain calculation issues which have been undetected so far (especially if they only appear in very specific circumstances), in which case they should be reported to the development team. However, this is unlikely in our case, as the FBD model has been extensively used without issue in previous analyses, and our analysis setup is similar to previous analyses.
--  an issue with the initial tree: the inference will not start if the provided initial tree is impossible under the specified tree model or doesn't match with the provided MRCA constraints. By default, most analyses use a random tree simulated by the inference, which will fulfill all constraints. However, with more complex models or constraints, the simulation process can fail to find a good tree, in which case a valid starting tree needs to be provided by the user.
--  an issue with the initial values of the parameters: if the initial values set in the analysis are very far from plausible, the resulting likelihood of the model will be extremely small, which gets recorded as _-Infinity_ by BEAST2.
+-  **An issue with the initial tree:** the inference will not start if the initial tree is impossible under the specified tree model or MRCA constraints. By default, most analyses use a simple coalescent model to simulate a random initial tree that respects all MRCA constraints. However, with more complex models, or incompatible MRCA priors, the simulation process can fail to find a good tree. Similarly, when there are additional constraints on the tree that are not encoded in MRCA priors (as with the origin parameter in the example above), the simulated tree can also be incompatible. In such cases the simulation either needs to be fine-tuned to satisfy the constraints, or a valid initial tree should be provided to the analysis. 
+-  **An issue with the initial parameter values:** if the initial values set in the analysis are very far from plausible, the resulting density of the model will be extremely small. Because of the limitations of floating point arithmetic used by computers, numbers with very large magnitudes get approximated to positive or negative infinity and numbers with very small magnitudes to zero. That means for very improbable parameter combinations, the density of a model, {% eqinline P(\theta) \approx 0 %}. Usually, calculations are done in logspace to alleviate this effect, however for extremely unlikely parameter combinations we will have {% eqinline \log P(\theta) \approx -\infty %}. Most of the parametric prior distributions available in BEAST2 only tend to 0 as the parameter tends to infinity, making it very unlikely to encounter numerical underflow issues with these distributions. However, more complex distributions, like tree priors, have complex, high-dimensional density landscapes and it is entirely possible that a parameter combination that works for one model evaluates to negative infinity for a related model. 
+-  **A bug in the density calculation:** BEAST2 packages can contain calculation issues which have remained undetected so far (especially if they only appear under very specific circumstances). Such bugs should be reported to the package developers. However, this is unlikely in our case, as the FBD model has been extensively tested and used in the past, and our analysis setup is similar to previous analyses.
 
-To inspect the starting values and find the issue, we will first load the file into BEAUti.
+To inspect the initial values and find the issue, we will first load the file into BEAUti.
 
 > Open **BEAUti** and load in the `issue3_2.xml` file by navigating to **File > Load**.
 > 
@@ -432,33 +433,46 @@ As we can see in [Figure 13](#startingTree), the initial tree in this analysis i
 </figure>
 <br>
 
-The only constraint set on the tree is a prior on the age of the root, which we can see in the **Priors** panel. By checking the details, we can see that this is a wide lognormal prior, with the 5% quantile of the prior at 206 Ma and the 95% quantile at 437 Ma. Let's import our starting tree in Icytree to check if the root age is compatible with the prior.
+The only constraint set on the tree is a prior on the age of the root, which we can see in the **Priors** panel. By checking the details, we can see that this is a wide lognormal prior, with the 5% quantile of the prior at **206 Ma** and the 95% quantile at **437 Ma** (in this analysis branch lengths are in millions of years). Normally, a single lognormal MRCA prior will not be incompatible with any tree, since it is defined across all positive real numbers and only approaches 0 for parameter values approaching infinity. However, this particular prior also has an offset of **25 Ma** set. That means any tree with a root height less than 25 Ma will be incompatible with this prior. 
+
+Let's import our starting tree in Icytree to check if the root age is compatible with the prior.
 
 > Open Icytree ([https://icytree.org/](https://icytree.org/)) in a web browser.
-> Copy the Newick string from the **Starting tree** panel or from the XML file.
-> Paste the string into a blank text file and save it as `starting.tre`.
-> Drag and drop the `starting.tre` file into Icytree.
+>
+> - Copy the Newick string from the **Starting tree** panel or from the XML file.
+> - In the IcyTree browser window click **File > Enter tree directly**
+> - Paste the copied Newick string and press **Done** to display the tree in IcyTree. 
 >
 
 By hovering over the root node of the starting tree, we can see that its age is set to **417.2 Ma**, which is consistent with the root prior set in the analysis. 
 
-Next, we will inspect the starting values of the parameters of the FBD model, found in the **Priors** panel in **BEAUti**. The FBD model has 3 parameters: the diversification rate, the turnover and the sampling proportion. We can see that the initial diversification rate is **1.0**, the initial sampling proportion is **0.5** and the initial turnover is **0.5**. These are the default values for these parameters, but they may not be adapted to all datasets. In particular, a diversification rate of 1.0/My is a very high value - since our starting tree is 400 My old, it means that we would expect about **exp(400 x 1.0) = 5 x 10^173** extant species (as opposed 8 extant bears). Having a very implausible starting value for the diversification rate could explain the failure we observed earlier when calculating the likelihood of the FBD model, so we will change it to a more realistic value of **0.01**.
+Next, we will inspect the initial values of the parameters of the FBD model, found in the **Priors** panel in **BEAUti**. The FBD model has 3 parameters: the diversification rate, the turnover and the sampling proportion. We can see that the initial diversification rate is **1.0**, the initial sampling proportion **0.5** and the initial turnover **0.5**. These are the default values of these parameters, but they may not be adapted to all datasets. In particular, a diversification rate of 1.0/My is a very high value - since our starting tree is more than 400 My old, it means that we would expect about {% eqinline \exp(400 \times 1.0) \approx 5 \times 10^{173} %} extant species (as opposed to the 8 extant bears we actually have). Having a very implausible starting value for the diversification rate could explain the failure we observed earlier when calculating the likelihood of the FBD model, so we will change it to a more realistic value of **0.01**. This leads to the much more reasonable {% eqinline \exp(400 \times 0.01) \approx 55 %}, still more than observed, but not so unlikely that the log density would evaluate to negative infinity.
 
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **diversificationRateFBD** parameter.
-> Change the initial value in the **Value** box to **0.01** ([Figure 15](#initialDiv)).
-> Click on **OK** to close the box.
-> Save the updated configuration as `issue3_2_fixed.xml` by navigating to **File > Save As**.
-> Open **BEAST2** and select `issue3_2_fixed.xml` as the input file.
-> Start the run with the **Run** button. It works now!
+> 
+> - Change the initial value in the **Value** box to **0.01** and click on **OK** to close the box ([Figure 15](#initialDiv)).
+> - Save the updated configuration as `issue3_2_fixed.xml` by navigating to **File > Save As**.
+> - Open **BEAST2** and select `issue3_2_fixed.xml` as the input file.
+> - Start the run with the **Run** button. It works now!
 >
 
 <figure>
 	<a id="initialDiv"></a>
-	<img style="width:50.0%;" src="figures/initialDiv.png" alt="">
+	<img style="width:70.0%;" src="figures/initialDiv.png" alt="">
 	<figcaption>Figure 15: Changing the initial value of the diversification rate.</figcaption>
 </figure>
 <br>
+
+
+> **Topic for discussion**
+>
+> We investigated three model components in the example above, the MRCA prior, the initial tree and the FBD tree prior.
+>
+> We finally found that the initial parameter combination of the FBD tree prior was very unlikely, specifically the diversification rate was incompatible with the tree height. If we had not specified an MRCA prior or an initial tree, would we still have encountered the initialization error? 
+>  
+> Try removing the MRCA prior and changing the initial tree back to a randomly simulated tree in BEAUti to investigate this question! 
+>
 
 
 ### Using a different seed or increasing the number of initialization attempts
