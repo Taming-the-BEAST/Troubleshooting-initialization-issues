@@ -69,7 +69,7 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 </figure>
 <br>
 
-> Next, uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)).
+> Next, uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)). 
 > 
 
 <figure>
@@ -79,7 +79,7 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 </figure>
 <br>
 
-The reason for uninstalling the MM package will become clear later. If the MM package wasn't installed then clicking uninstall will have no effect.
+The reason for uninstalling the MM package will become clear later. Note that uninstalling **MM** will also necessitate uninstalling any installed packages that depend on it. Please remember to reinstall these packages after finishing this tutorial! If the MM package wasn't installed then clicking uninstall will have no effect.
 
 BEAUti needs to be closed for the newly installed packages to be loaded properly.
 
@@ -104,7 +104,7 @@ BEAUti needs to be closed for the newly installed packages to be loaded properly
 <br>
 
 
-This error means that BEAST2 could not identify one of the components of the analysis in the XML file. The error message shows which component is unidentified, in this example the class _morphmodels.evolution.substitutionmodel.LewisMK_, as well as the program's closest guess for what the component could be, here _beastlabs.inference.ML_. BEAST2 also shows you roughly where the reference to the missing component was found within the hierarchical structure of the XML file (here it is the substitution model, inside the site model, inside the tree likelihood, and so on). 
+This error means that BEAST2 could not identify one of the components of the analysis in the XML file. We have helpfully highlighted the important part of the error message in [Figure 4](#errorPackage). It shows which component is unidentified, in this example the class _morphmodels.evolution.substitutionmodel.LewisMK_, as well as the program's closest guess for what the component could be, here _beastlabs.inference.ML_. BEAST2 also shows you roughly where the reference to the missing component was found within the hierarchical structure of the XML file (here it is the substitution model, inside the site model, inside the tree likelihood, and so on). 
 
 
 There are two main causes for this error:
@@ -319,9 +319,9 @@ Using this procedure to trace through the calculation of the posterior you can a
 > 
 > If no prior is set for a parameter the implicit prior becomes a uniform distribution between the parameter bounds. In the case of the mutation rate (called <i>mutationRate.s:bears_morphology2</i> in the XML file), no bounds are set either, so it inherits the default bounds of a real parameter in BEAST2, which is between negative and positive infinity. 
 > <br><br>
-> In this case it doesn't make any difference. Although the parameter is estimated, the Delta exchange operator on it parameter constrains it to be always equal to one (it would probably have made more sense to just fix the parameter though). 
+> In this case it doesn't make any difference. Although the parameter is estimated, the Delta exchange operator that acts on it constrains it to always be equal to one (it would probably have made more sense to just fix the parameter though). 
 > <br><br>
-> In general though, an unbounded uniform prior is a bad idea for most parameters for exactly the same reasons it is a bad choice for the clock rate. 
+> In general, an unbounded uniform prior is a bad idea for most parameters for exactly the same reasons it is a bad choice for the clock rate. 
 > More importantly, "hidden" priors like these are a problem when doing model selection. An unbounded uniform prior is an improper prior (there exists no normalising constant that can make it integrate to 1, so it integrates to infinity). Improper priors can cause issues with model selection if the posterior then also integrates to infinity. In general it's impossible to know if using an improper prior will lead to a proper posterior, so it is recommended to not use improper priors (we can only know if the posterior is proper if we can analytically integrate it, which is usually not the case for BEAST models). It is always possible to set some sensible parameter bounds, so we can always make all of our priors proper. 
 > <br><br>
 > Finding out if there are "hidden" priors in your model is more complex, especially when the BEAUti template for a model doesn't explicitly initialize priors for all model parameters. You can navigate to the <b>Initialization</b> panel in BEAUti (click <b>View > Show Initialization panel</b> to display it) to check if all model parameters also have prior distributions set (by comparing with the <b>Priors</b> panel), but it is unfortunately not possible to add a missing prior from BEAUti. If you've identified such a model parameter then you would need to add the prior by manually editing the XML file. It is also a good idea to contact the package developers, so they can address the issue in future releases.
@@ -356,8 +356,11 @@ While this is a validation issue, the error message is different to the example 
 Unfortunately, while it is straightforward to create an XML file with this error in BEAUti, it cannot be loaded into BEAUti again for editing (give it a try). This is because BEAUti does more than simply write XML code to files. While editing the XML file, BEAUti also instantiates the model (using the same code that BEAST2 uses to run the model). This is done to ensure that BEAUti only produces XML files containing BEAST2 analyses with the correct syntax. Similarly, when loading an XML file into BEAUti, the model is instantiated. If doing so returns any errors, BEAUti cannot load the XML file. This would be the case if, for example the XML file contains syntax errors, or it refers to classes in packages that are not installed. In this particular case, the FBD model checks that the initial value of the origin parameter is greater than the height of the starting tree. Since this is not the case here, the model throws an error and BEAUti fails to load the XML file. To correct this error we can either recreate the whole XML file from scratch in BEAUti, or quickly edit it in a text editor.
 
 > Open the `issue3b.xml` file in a text editor.
-> - Look for the parameter **originFBD.t:bears** and examine its initial value.
-> - Look for the root prior **root.prior** and examine its distribution. Look in particular at the values for the **offset**, **M** and **S** parameters.
+> - Look for where the parameter **originFBD.t:bears** is defined in the XML file and examine its initial value. (It is defined within the `<state>` block)
+> - The initial value is the unlabelled value just before the closing `</parameter>` tag.
+> - Look for the root prior **root.prior** and examine its distribution. 
+> - The root prior's distribution is inside the prior, the `<distribution id="prior" spec="CompoundDistribution">` block, and within the prior is inside the `<distribution id="root.prior"` block, after the taxon set defining all the taxa included in this MRCA prior.
+> - Look in particular at the values for the **offset**, **M** and **S** parameters.
 >
 
 The origin parameter configuration is:
@@ -380,7 +383,7 @@ We can see that the distribution for the root prior has an offset of **125.0**, 
 > - Start the run with the **Run** button. It works now!
 >
 
-Here the incompatibility stemmed from us setting a root prior with an offset. However, this issue can also happen when using a user-specified starting tree, for instance a tree from a Newick string. In this case the origin parameter needs to be compatible with the specified tree, i.e. the initial value of the origin needs to be higher than the root of the Newick tree. Finally, it is also entirely possible for this issue to occur even when using a default randomly initialized tree. 
+Here the incompatibility stemmed from us setting a root prior with an offset. This scenario is a little contrived, however setting a root prior is not the only way this issue can occur! It can also happen when using a user-specified starting tree, for instance a tree from a Newick string. In such a case the origin parameter needs to be compatible with the specified tree, i.e. the initial value of the origin needs to be higher than the root of the Newick tree. Finally, it is also entirely possible for this issue to occur even when using a default randomly initialized tree. 
 
 Some other common cases where inconsistencies between model components can lead to initialization failures are:
 
@@ -451,7 +454,7 @@ Let's import our starting tree in Icytree to check if the root age is compatible
 
 > Open Icytree ([https://icytree.org/](https://icytree.org/)) in a web browser.
 >
-> - Copy the Newick string from the **Starting tree** panel or from the XML file.
+> - Copy the Newick string from the **Starting tree** panel or from the XML file. Make sure that you copy the whole string, up to the semi-colon at the end (it may be easiest to double or triple click on it to select everything). 
 > - In the IcyTree browser window click **File > Enter tree directly**.
 > - Paste the copied Newick string and press **Done** to display the tree in IcyTree. 
 >
@@ -577,7 +580,7 @@ However, there is a problem. The online manual is for BEAST v2.6.7 and may be ou
 
 > Open a terminal and navigate to the directory where you want to save the BEAST2 XML manual
 > 
-> - Type `<beast2 path>/bin/applauncher DocMaker .` where `<beast 2 path>` should be replaced with the directory where BEAST2 is installed.
+> - Type `<beast2 path>/bin/applauncher DocMaker .` where `<beast 2 path>` should be replaced with the directory where BEAST2 is installed. For instance, if you're using a Mac and you installed BEAST v2.7.4 in the default location, you would need to type `/Applications/BEAST\ 2.7.4/bin/applauncher DocMaker .`
 > - Now open the newly generated `index.html` in any browser.
 >
 > This is also documented [here](http://www.beast2.org/2023/06/01/docmaker.html)
