@@ -52,7 +52,7 @@ Examples in this tutorial require the **SA** (Sampled Ancestors) package to be i
 
 <figure>
 	<a id="packageManage1"></a>
-	<img style="width:80.0%;" src="figures/package_manager.png" alt="">
+	<img style="width:40.0%;" src="figures/package_manager.png" alt="">
 	<figcaption>Figure 1: Finding the BEAST2 Package Manager.</figcaption>
 </figure>
 <br>
@@ -64,7 +64,7 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 
 <figure>
 	<a id="packageSA"></a>
-	<img style="width:70.0%;" src="figures/packageSA.png" alt="">
+	<img style="width:80.0%;" src="figures/packageSA.png" alt="">
 	<figcaption>Figure 2: Install the SA package.</figcaption>
 </figure>
 <br>
@@ -74,7 +74,7 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 
 <figure>
 	<a id="packageMM"></a>
-	<img style="width:70.0%;" src="figures/packageMM.png" alt="">
+	<img style="width:80.0%;" src="figures/packageMM.png" alt="">
 	<figcaption>Figure 3: Uninstalling the MM package.</figcaption>
 </figure>
 <br>
@@ -98,7 +98,7 @@ BEAUti needs to be closed for the newly installed packages to be loaded properly
 
 <figure>
 	<a id="errorPackage"></a>
-	<img style="width:80.0%;" src="figures/errorPackage.png" alt="">
+	<img style="width:100.0%;" src="figures/errorPackage.png" alt="">
 	<figcaption>Figure 4: The error message when running issue1.xml in BEAST2.</figcaption>
 </figure>
 <br>
@@ -151,7 +151,7 @@ There are still times when this strategy won't work (the package is messy, conta
 
 <figure>
 	<a id="errorOverwrite"></a>
-	<img style="width:80.0%;" src="figures/errorOverwrite.png" alt="">
+	<img style="width:100.0%;" src="figures/errorOverwrite.png" alt="">
 	<figcaption>Figure 5: Another error message in BEAST2, this time for issue2.xml.</figcaption>
 </figure>
 <br>
@@ -174,7 +174,7 @@ To solve this problem, there are three possibilities:
 <figure>
 	<a id="resume"></a>
 	<img style="width:70.0%;" src="figures/resume.png" alt="">
-	<figcaption>Figure 7: BEAST2 launcher with resume option.</figcaption>
+	<figcaption>Figure 7: BEAST2 launcher with resume option selected.</figcaption>
 </figure>
 <br>
 
@@ -199,9 +199,9 @@ To make your life easier and avoid accidentally overwriting output files you can
 
 ### Troubleshooting a simple parameter issue
 
-> Download the BEAST input file `issue3_1.xml`.
+> Download the BEAST input file `issue3a.xml`.
 >
-> - Open **BEAST2** and select the file `issue3_1.xml` as input file. 
+> - Open **BEAST2** and select the file `issue3a.xml` as input file. 
 > - Start the run with the **Run** button.
 >
 > You should get an error message, as shown in [Figure 8](#errorStarting).
@@ -209,8 +209,8 @@ To make your life easier and avoid accidentally overwriting output files you can
 
 <figure>
 	<a id="errorStarting"></a>
-	<img style="width:80.0%;" src="figures/errorStarting.png" alt="">
-	<figcaption>Figure 8: Yet another error message in BEAST2, this time for issue3_1.xml.</figcaption>
+	<img style="width:100.0%;" src="figures/errorStarting.png" alt="">
+	<figcaption>Figure 8: Yet another error message in BEAST2, this time for issue3a.xml.</figcaption>
 </figure>
 <br>
 
@@ -265,7 +265,7 @@ The likelihoods returned _NaN_ (not a number), which means BEAST2 crashed before
 
 To inspect the parameter and find the issue, we will first load the file into BEAUti.
 
-> Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
+> Open **BEAUti** and load in the `issue3a.xml` file by navigating to **File > Load**.
 > 
 > - Switch to the **Priors** panel.
 > - Click on the arrow left of the **clockRate.c:bears_irbp_fossils** to see the details of this prior ([Figure 9](#clockRatePrior)).
@@ -290,17 +290,17 @@ The initial value of the clock rate is set to **1.0**, which is outside the boun
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **clockRate.c:bears_irbp_fossils** parameter.
 >
-> - Change the initial value in the **Value** box to **0.01** ([Figure 11](#initialClock)).
+> - Change the initial value in the **Value** box to **0.01** ([Figure 10](#initialClock)).
 > - Click on **OK** to close the box.
-> - Save the updated configuration as `issue3_1_fixed.xml` by navigating to **File > Save As**.>
-> - Open **BEAST2** and select `issue3_1_fixed.xml` as the input file.
+> - Save the updated configuration as `issue3a_fixed.xml` by navigating to **File > Save As**.>
+> - Open **BEAST2** and select `issue3a_fixed.xml` as the input file.
 > - Start the run with the **Run** button. It works now!
 >
 
 <figure>
 	<a id="initialClock"></a>
 	<img style="width:70.0%;" src="figures/initialClock.png" alt="">
-	<figcaption>Figure 11: Changing the initial value of the clock rate.</figcaption>
+	<figcaption>Figure 10: Changing the initial value of the clock rate.</figcaption>
 </figure>
 <br>
 
@@ -309,7 +309,7 @@ Using this procedure to trace through the calculation of the posterior you can a
 
 > **Topic for discussion**
 > 
-> In the XML file `issue3_1.xml`, is there a prior for the relative mutation rate in the Lewis MK model, {% eqinline \phi %}? 
+> In the XML file `issue3a.xml`, is there a prior for the relative mutation rate in the Lewis MK model, {% eqinline \phi %}? 
 >
 > It is not shown in the initialization trace [Figure 8](#errorStarting), which means no explicit prior was set for this parameter. 
 > Is this a problem? If no prior distribution is set in the XML file, what prior is used for the parameter? 
@@ -338,16 +338,16 @@ In the example above the incompatibility was just within one parameter that was 
 
 One particular example occurs with birth-death models where the origin parameter is estimated (such as the BDSKY, BDMM or FBD models). 
 
-> Download the BEAST2 input file `issue5.xml`.
+> Download the BEAST2 input file `issue3b.xml`.
 > 
-> - Open **BEAST2** and select the file `issue5.xml` as input file. 
-> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 18](#errorOrigin).
+> - Open **BEAST2** and select the file `issue3b.xml` as input file. 
+> - Start the run with the **Run** button. You should get an error message, as shown in [Figure 11](#errorOrigin).
 >
 
 <figure>
 	<a id="errorOrigin"></a>
-	<img style="width:80.0%;" src="figures/errorOrigin.png" alt="">
-	<figcaption>Figure 18: The revenge of the return of the error message (issue5.xml).</figcaption>
+	<img style="width:100.0%;" src="figures/errorOrigin.png" alt="">
+	<figcaption>Figure 11: The return of the error message (issue3b.xml).</figcaption>
 </figure>
 <br>
 
@@ -355,7 +355,7 @@ While this is a validation issue, the error message is different to the example 
 
 Unfortunately, while it is straightforward to create an XML file with this error in BEAUti, it cannot be loaded into BEAUti again for editing (give it a try). This is because BEAUti does more than simply write XML code to files. While editing the XML file, BEAUti also instantiates the model (using the same code that BEAST2 uses to run the model). This is done to ensure that BEAUti only produces XML files containing BEAST2 analyses with the correct syntax. Similarly, when loading an XML file into BEAUti, the model is instantiated. If doing so returns any errors, BEAUti cannot load the XML file. This would be the case if, for example the XML file contains syntax errors, or it refers to classes in packages that are not installed. In this particular case, the FBD model checks that the initial value of the origin parameter is greater than the height of the starting tree. Since this is not the case here, the model throws an error and BEAUti fails to load the XML file. To correct this error we can either recreate the whole XML file from scratch in BEAUti, or quickly edit it in a text editor.
 
-> Open the `issue5.xml` file in a text editor.
+> Open the `issue3b.xml` file in a text editor.
 > - Look for the parameter **originFBD.t:bears** and examine its initial value.
 > - Look for the root prior **root.prior** and examine its distribution. Look in particular at the values for the **offset**, **M** and **S** parameters.
 >
@@ -375,8 +375,8 @@ And the root prior distribution is set up like this:
 We can see that the distribution for the root prior has an offset of **125.0**, meaning that the root of the tree will always be greater than this value. However the initial value of the origin parameter was left to the default, which is **100.0**. This is the source of the error reported by **BEAST2**. Thus we need to change the value of the origin to be compatible with our starting tree.
 
 > - In the text editor, look for the parameter **originFBD.t:bears** and change its initial value from **100.0** to **150.00**.
-> - Save the updated configuration as `issue5_fixed.xml`.
-> - Open **BEAST2** and select `issue5_fixed.xml` as the input file.
+> - Save the updated configuration as `issue3b_fixed.xml`.
+> - Open **BEAST2** and select `issue3b_fixed.xml` as the input file.
 > - Start the run with the **Run** button. It works now!
 >
 
@@ -395,16 +395,16 @@ Some more common model incompatibilities are also listed [here](http://www.beast
 
 ### Troubleshooting a complex parameter issue
 
-> Download the BEAST input file `issue3_2.xml`.
+> Download the BEAST input file `issue3c.xml`.
 >
-> - Open **BEAST2** and select the file `issue3_2.xml` as input file. 
+> - Open **BEAST2** and select the file `issue3c.xml` as input file. 
 > - Start the run with the **Run** button. You should get an error message, as shown in [Figure 12](#errorStarting2).
 > 
 
 <figure>
 	<a id="errorStarting2"></a>
-	<img style="width:80.0%;" src="figures/errorStarting2.png" alt="">
-	<figcaption>Figure 12: A similar error message as earlier (issue3_2.xml).</figcaption>
+	<img style="width:100.0%;" src="figures/errorStarting2.png" alt="">
+	<figcaption>Figure 12: A similar error message as earlier (issue3c.xml).</figcaption>
 </figure>
 <br>
 
@@ -416,7 +416,7 @@ As before, **BEAST2** could not find a valid state to start the inference. This 
 
 To inspect the initial values and find the issue, we will first load the file into BEAUti.
 
-> Open **BEAUti** and load in the `issue3_2.xml` file by navigating to **File > Load**.
+> Open **BEAUti** and load in the `issue3c.xml` file by navigating to **File > Load**.
 > 
 
 The starting tree can be found in the **Starting tree** panel, which is hidden by default.
@@ -464,8 +464,8 @@ Next, we will inspect the initial values of the parameters of the FBD model, fou
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **diversificationRateFBD** parameter.
 > 
 > - Change the initial value in the **Value** box to **0.01** and click on **OK** to close the box ([Figure 15](#initialDiv)).
-> - Save the updated configuration as `issue3_2_fixed.xml` by navigating to **File > Save As**.
-> - Open **BEAST2** and select `issue3_2_fixed.xml` as the input file.
+> - Save the updated configuration as `issue3c_fixed.xml` by navigating to **File > Save As**.
+> - Open **BEAST2** and select `issue3c_fixed.xml` as the input file.
 > - Start the run with the **Run** button. It works now!
 >
 
@@ -496,7 +496,7 @@ For randomly initialized model components the random number seed is very importa
 
 To save time rerunning the same analysis with many different seeds, BEAST2 by default tries to initialize an analysis **10** times before giving up, but it is possible to increase the number of attempts.
 
-> Open **BEAUti** and load in the `issue3_1.xml` file by navigating to **File > Load**.
+> Open **BEAUti** and load in the `issue3b.xml` file by navigating to **File > Load**.
 > 
 > - Switch to the **MCMC** tab.
 > - The number of initialization attempts is controlled by the **Num Initialization Attempts** setting, shown in [Figure 16](#numInit).
@@ -509,7 +509,7 @@ To save time rerunning the same analysis with many different seeds, BEAST2 by de
 </figure>
 <br>
 
-Note that changing this setting will never help if the analysis contains incompatibilities (or any of the other issues above). In the case of the `issue3_1.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
+Note that changing this setting will never help if the analysis contains incompatibilities (or any of the other issues above). In the case of the `issue3a.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
 
 > **Topic for discussion**
 >
@@ -535,12 +535,12 @@ Note that changing this setting will never help if the analysis contains incompa
 
 <figure>
 	<a id="errorParsing"></a>
-	<img style="width:80.0%;" src="figures/errorParsing.png" alt="">
-	<figcaption>Figure 17: The return of the error message (issue4.xml).</figcaption>
+	<img style="width:100.0%;" src="figures/errorParsing.png" alt="">
+	<figcaption>Figure 17: The revenge of the return of the error message (issue4.xml).</figcaption>
 </figure>
 <br>
 
-Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (_\<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>_) and what the issue is (_Input 'tree' must be specified._). If we open the `issue5.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
+Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (_\<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>_) and what the issue is (_Input 'tree' must be specified._). If we open the `issue4.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
 
 ```xml
 <log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology"/>
@@ -564,12 +564,12 @@ XML parsing errors usually occur when the XML file has been manually edited and 
 
 Unless you know your way around the BEAST2 source code it can be difficult to know how to manually edit the components in an XML file. In the example above, we already had a previous, working analysis and could use that to debug the issue. But if we didn't have it, it may have taken us much longer to figure out how to specify the tree for the rate statistic component. 
 
-Fortunately, all of the components are documented in the BEAST2 XML manual at [http://www.beast2.org/xml/index.html](http://www.beast2.org/xml/index.html). If we search for `RateStatistic` in the left-hand panel, we see that `tree` is a required input ([Figure 17](#beastdoc)). 
+Fortunately, all of the components are documented in the BEAST2 XML manual at [http://www.beast2.org/xml/index.html](http://www.beast2.org/xml/index.html). If we search for `RateStatistic` in the left-hand panel, we see that `tree` is a required input ([Figure 18](#beastdoc)). 
 
 <figure>
 	<a id="beastdoc"></a>
 	<img style="width:100.0%;" src="figures/beastdoc.png" alt="">
-	<figcaption>Figure 17: The XML documentation for rate statistic.</figcaption>
+	<figcaption>Figure 18: The XML documentation for rate statistic.</figcaption>
 </figure>
 <br>
 
