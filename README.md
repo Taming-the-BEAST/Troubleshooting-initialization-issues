@@ -69,6 +69,8 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 </figure>
 <br>
 
+> Similarly, **ORC** package may be already installed. If not, install the **ORC** package by selecting it and clicking the **Install/Upgrade** button.
+> 
 > Next, uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)). 
 > 
 
