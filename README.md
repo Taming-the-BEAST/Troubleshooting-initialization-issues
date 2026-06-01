@@ -279,7 +279,7 @@ To inspect the parameter and find the issue, we will first load the file into BE
 
 <figure>
 	<a id="clockRatePrior"></a>
-	<img style="width:80.0%;" src="figures/clockRatePrior.png" alt="">
+	<img style="width:100.0%;" src="figures/clockRatePrior.png" alt="">
 	<figcaption>Figure 9: Details of the genetic clock rate prior.</figcaption>
 </figure>
 <br>
@@ -305,7 +305,7 @@ The initial value of the clock rate is set to **1.0**, which is outside the boun
 
 <figure>
 	<a id="initialClock"></a>
-	<img style="width:70.0%;" src="figures/initialClock.png" alt="">
+	<img style="width:80.0%;" src="figures/initialClock.png" alt="">
 	<figcaption>Figure 10: Changing the initial value of the clock rate.</figcaption>
 </figure>
 <br>
@@ -436,7 +436,7 @@ The starting tree can be found in the **Starting tree** panel, which is hidden b
 
 <figure>
 	<a id="startingTree"></a>
-	<img style="width:80.0%;" src="figures/startingTree.png" alt="">
+	<img style="width:100.0%;" src="figures/startingTree.png" alt="">
 	<figcaption>Figure 13: Starting tree panel.</figcaption>
 </figure>
 <br>
@@ -449,7 +449,7 @@ As we can see in [Figure 13](#startingTree), the initial tree in this analysis i
 
 <figure>
 	<a id="rootPrior"></a>
-	<img style="width:80.0%;" src="figures/rootPrior.png" alt="">
+	<img style="width:100.0%;" src="figures/rootPrior.png" alt="">
 	<figcaption>Figure 14: Priors panel showing the root prior.</figcaption>
 </figure>
 <br>
@@ -480,7 +480,7 @@ Next, we will inspect the initial values of the parameters of the FBD model, fou
 
 <figure>
 	<a id="initialDiv"></a>
-	<img style="width:70.0%;" src="figures/initialDiv.png" alt="">
+	<img style="width:80.0%;" src="figures/initialDiv.png" alt="">
 	<figcaption>Figure 15: Changing the initial value of the diversification rate.</figcaption>
 </figure>
 <br>
@@ -513,7 +513,7 @@ To save time rerunning the same analysis with many different seeds, BEAST2 by de
 
 <figure>
 	<a id="numInit"></a>
-	<img style="width:80.0%;" src="figures/numInit.png" alt="">
+	<img style="width:100.0%;" src="figures/numInit.png" alt="">
 	<figcaption>Figure 16: Setting the number of initialization attempts.</figcaption>
 </figure>
 <br>
