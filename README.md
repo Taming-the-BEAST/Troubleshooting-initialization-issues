@@ -45,7 +45,7 @@ The data used in this tutorial is an alignment of genetic sequences for the inte
  
 ## Packages
 
-Examples in this tutorial require the **SA** (Sampled Ancestors) and ORC (optimised relaxed clock) packages to be installed.
+Examples in this tutorial require the **SA** (Sampled Ancestors) and **ORC** (optimised relaxed clock) packages to be installed.
 
 > Launch **BEAUti**, then open the **BEAST2 Package Manager** by navigating to **File > Manage Packages** ([Figure 1](#packageManage1)).
 > 
@@ -64,27 +64,28 @@ The **SA** package may already be installed. Otherwise, install it by doing the 
 
 <figure>
 	<a id="packageSA"></a>
-	<img style="width:80.0%;" src="figures/packageSA.png" alt="">
+	<img style="width:100.0%;" src="figures/packageSA.png" alt="">
 	<figcaption>Figure 2: Install the SA package.</figcaption>
 </figure>
 <br>
 
 Similarly, the **ORC** package may already be installed. If not, follow the instruction below.
 
->  Install the **ORC** package by selecting it and clicking the **Install/Upgrade** button.
+> Install the **ORC** package by selecting it and clicking the **Install/Upgrade** button.
 
+For what follows we need to ensure that the **MM** package is not installed (the reason why will become clear later).
 
-> Next, uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)). 
+> Uninstall the **MM** package by selecting it and clicking the **Uninstall** button ([Figure 3](#packageMM)). 
 > 
 
 <figure>
 	<a id="packageMM"></a>
-	<img style="width:80.0%;" src="figures/packageMM.png" alt="">
+	<img style="width:100.0%;" src="figures/packageMM.png" alt="">
 	<figcaption>Figure 3: Uninstalling the MM package.</figcaption>
 </figure>
 <br>
 
-The reason for uninstalling the MM package will become clear later. Note that uninstalling **MM** will also necessitate uninstalling any installed packages that depend on it. Please remember to reinstall these packages after finishing this tutorial! If the MM package wasn't installed then clicking uninstall will have no effect.
+Note that uninstalling **MM** will also necessitate uninstalling any installed packages that depend on it. Please remember to reinstall these packages after finishing this tutorial! If the **MM** package wasn't installed then clicking uninstall will have no effect.
 
 BEAUti needs to be closed for the newly installed packages to be loaded properly.
 
@@ -466,7 +467,7 @@ Let's import our starting tree in Icytree to check if the root age is compatible
 
 By hovering over the root node of the starting tree, we can see that its age is set to **417.2 Ma**, which is consistent with the root prior set in the analysis. 
 
-Next, we will inspect the initial values of the parameters of the FBD model, found in the **Priors** panel in **BEAUti**. The FBD model has 3 parameters: the diversification rate, the turnover and the sampling proportion. We can see that the initial diversification rate is **1.0**, the initial sampling proportion **0.5** and the initial turnover **0.5**. These are the default values of these parameters, but they may not be adapted to all datasets. In particular, a diversification rate of 1.0/My is a very high value - since our starting tree is more than 400 My old, it means that we would expect about {% eqinline \exp(400 \times 1.0) \approx 5 \times 10^{173} %} extant species (as opposed to the 8 extant bears we actually have). Having a very implausible starting value for the diversification rate could explain the failure we observed earlier when calculating the likelihood of the FBD model, so we will change it to a more realistic value of **0.01**. This leads to the much more reasonable {% eqinline \exp(400 \times 0.01) \approx 55 %}, still more than observed, but not so unlikely that the log density would evaluate to negative infinity.
+Next, we will inspect the initial values of the parameters of the FBD model, found in the **Priors** panel in **BEAUti**. In addition to the origin, the FBD model has 3 parameters that are estimated here: the diversification rate, the turnover and the sampling proportion. We can see that the initial diversification rate is **1.0**, the initial sampling proportion **0.5** and the initial turnover **0.5**. These are the default values of these parameters, but they may not be adapted to all datasets. In particular, a diversification rate of 1.0/My is a very high value - since our starting tree is more than 400 My old, it means that we would expect about {% eqinline \exp(400 \times 1.0) \approx 5 \times 10^{173} %} extant species, as opposed to the 8 extant bears we actually have (the model is conditioned on observing all extant species since {% eqinlilne \rho = 1$} and is not estimated). Having a very implausible starting value for the diversification rate could explain the failure we observed earlier when calculating the likelihood of the FBD model, so we will change it to a more realistic value of **0.01**. This leads to the much more reasonable {% eqinline \exp(400 \times 0.01) \approx 55 %}, still more than observed, but not so unlikely that the log density would evaluate to negative infinity.
 
 
 > In the **Priors** panel, click on the **initial = [1.0]** box right of the **diversificationRateFBD** parameter.
@@ -517,7 +518,7 @@ To save time rerunning the same analysis with many different seeds, BEAST2 by de
 </figure>
 <br>
 
-Note that changing this setting will never help if the analysis contains incompatibilities (or any of the other issues above). In the case of the `issue3a.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initalization attempts will solve the issue.
+Note that changing this setting will never help if the analysis contains incompatibilities (or any of the other issues above). In the case of the `issue3a.xml` file, for instance, the starting value of the clock rate is outside of the bounds of the corresponding prior, so initialization will always fail regardless of how many attempts are performed. Similarly, if no model components are randomly initialised (e.g. a fixed starting tree is used) and there is an initialization issue, then no number of initialization attempts will solve the issue.
 
 > **Topic for discussion**
 >
@@ -548,7 +549,7 @@ Note that changing this setting will never help if the analysis contains incompa
 </figure>
 <br>
 
-Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (`\<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>`) and what the issue is (_Input 'tree' must be specified._). If we open the `issue4.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
+Here the run failed to start because the XML file could not be parsed, as explained by the error message _Error 110 parsing the xml input file_. Thankfully the error message tells us exactly where the error happened (`<log id='ORCRatesStat.c:bears_morphology' spec='beast.base.evolution.RateStatistic'>`) and what the issue is (_Input 'tree' must be specified._). If we open the `issue4.xml` file and look for **ORCRatesStat.c:bears_morphology**, we can see that line 771 corresponds to the error message and reads as follows:
 
 ```xml
 <log id="ORCRatesStat.c:bears_morphology" spec="beast.base.evolution.RateStatistic" branchratemodel="@OptimisedRelaxedClock.c:bears_morphology"/>
