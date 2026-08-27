@@ -1,9 +1,19 @@
 ---
 author: Joëlle Barido-Sottani,Louis du Plessis
-level: Beginner
 title: Troubleshooting initialization issues
 subtitle: Getting BEAST2 to start
-beastversion: 2.7.x
+beastversion_tutorial: 2.7.x
+workflow: Troubleshooting
+status: current
+keywords:
+- initialization
+- morphological
+- relaxed clock
+- calibration
+packages:
+- SA
+- ORC
+beastversion_package: '2.7'
 ---
 
 
